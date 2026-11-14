@@ -1,222 +1,215 @@
-# Pomodoro
+# 🍅 Pomodoro Timer
 
-Ứng dụng Pomodoro độc lập giúp bạn tập trung vào một công việc tại một thời điểm, nghỉ ngơi đúng nhịp và theo dõi thời gian tập trung.
+> Ứng dụng Pomodoro tối giản, hoạt động offline, chạy trực tiếp trên trình duyệt — không cần cài đặt, không cần tài khoản, không cần internet.
 
-Giao diện được thiết kế theo hướng tối giản, lấy cảm hứng từ ngôn ngữ thiết kế Material của Google: rõ ràng, gọn gàng, dễ sử dụng và hạn chế các yếu tố gây xao nhãng.
-
-> Đây là dự án độc lập, không phải sản phẩm chính thức hoặc được Google tài trợ.
-
-## Tổng quan
-
-- **Một tệp HTML duy nhất:** toàn bộ giao diện, CSS và JavaScript nằm trong `pomodoro.html`.
-- **Không cần cài đặt:** mở tệp bằng trình duyệt hiện đại để sử dụng.
-- **Hoạt động ngoại tuyến:** không sử dụng CDN, thư viện, font, hình ảnh hay API bên ngoài.
-- **Lưu dữ liệu cục bộ:** công việc, lịch sử phiên, cài đặt và tùy chọn giao diện được lưu trong trình duyệt.
-- **Song ngữ:** hỗ trợ Tiếng Việt và English.
-- **Hai giao diện:** Sáng và Tối; mặc định là Tiếng Việt và giao diện Sáng.
-- **Responsive:** bố cục thích ứng với máy tính, máy tính bảng và điện thoại.
-
-## Tính năng
-
-### 1. Bộ đếm Pomodoro
-
-- Ba chế độ: **Tập trung (Focus)**, **Nghỉ ngắn (Short Break)** và **Nghỉ dài (Long Break)**.
-- Thời lượng mặc định:
-
-  | Chế độ | Thời lượng |
-  |---|---:|
-  | Tập trung | 25 phút |
-  | Nghỉ ngắn | 5 phút |
-  | Nghỉ dài | 15 phút |
-  | Nghỉ dài sau | 4 phiên tập trung hoàn thành |
-
-- Vòng tròn tiến trình và đồng hồ đếm ngược.
-- Bắt đầu, tạm dừng, tiếp tục, đặt lại và bỏ qua phiên.
-- Có thể chọn chế độ thủ công.
-- Bộ đếm sử dụng mốc thời gian kết thúc (`Date.now()`), thay vì chỉ giảm một biến đếm theo từng giây, giúp đồng bộ thời gian khi tab bị đưa xuống nền hoặc trình duyệt tạm ngưng thực thi.
-- Trạng thái phiên đang chạy được lưu để ứng dụng có thể đối soát khi mở lại.
-
-### 2. Chu kỳ Pomodoro
-
-Chu kỳ mặc định:
-
-```text
-Focus 1 → Short Break
-Focus 2 → Short Break
-Focus 3 → Short Break
-Focus 4 → Long Break
-                    ↓
-                Chu kỳ mới
-```
-
-Chỉ phiên Focus hoàn thành mới được ghi nhận vào thống kê. Phiên nghỉ không làm tăng số phiên tập trung. Bỏ qua phiên không được tính là một phiên Focus hoàn thành.
-
-Có thể điều chỉnh số phiên Focus trước khi nghỉ dài trong phần Cài đặt.
-
-### 3. Quản lý công việc
-
-- Thêm, sửa và xóa công việc.
-- Đánh dấu hoàn thành hoặc mở lại công việc.
-- Chọn công việc đang thực hiện ngay trên màn hình Timer.
-- Đặt mục tiêu số phiên Pomodoro cho từng công việc.
-- Theo dõi số phiên Focus đã hoàn thành theo từng công việc.
-- Lịch sử phiên đã ghi nhận vẫn được giữ khi xóa công việc; tên công việc tại thời điểm hoàn thành được lưu trong bản ghi lịch sử.
-
-### 4. Thống kê năng suất
-
-Dữ liệu thống kê được tính từ các phiên Focus hoàn thành đã lưu, bao gồm:
-
-- Số phiên tập trung hôm nay.
-- Tổng thời gian tập trung hôm nay.
-- Tổng số phiên và tổng thời gian tập trung.
-- Biểu đồ thời gian tập trung trong 7 ngày gần nhất.
-- Thời gian tập trung trung bình mỗi phiên.
-- Số công việc đã hoàn thành.
-- Ngày có thời gian tập trung cao nhất.
-- Chuỗi ngày có ghi nhận phiên tập trung.
-- Lịch sử các phiên Focus.
-
-Khi chưa có dữ liệu, ứng dụng hiển thị trạng thái trống thay vì tạo số liệu mẫu.
-
-### 5. Âm thanh và thông báo
-
-- Bật hoặc tắt âm thanh.
-- Điều chỉnh âm lượng.
-- Chọn một trong bốn kiểu âm báo: Digital Beep, Soft Bell, Classic Alarm và Gentle Chime.
-- Nghe thử âm báo.
-- Bật âm báo khi bắt đầu phiên (tùy chọn).
-- Thông báo trong ứng dụng khi phiên kết thúc.
-- Thông báo hệ thống qua Notification API nếu trình duyệt hỗ trợ và người dùng đã cấp quyền.
-- Âm thanh được tạo bằng Web Audio API, không cần tệp âm thanh bên ngoài.
-
-### 6. Cài đặt và tiện ích
-
-- Điều chỉnh thời lượng Focus, nghỉ ngắn, nghỉ dài và số phiên trước nghỉ dài.
-- Tùy chỉnh tự chuyển chế độ sau khi hoàn thành phiên.
-- Tùy chỉnh tự bắt đầu phiên nghỉ và tự bắt đầu phiên Focus.
-- Chuyển đổi giao diện Sáng/Tối.
-- Chuyển đổi Tiếng Việt/English.
-- Chế độ toàn màn hình.
-- Tùy chọn giữ màn hình luôn bật bằng Screen Wake Lock API nếu trình duyệt hỗ trợ.
-- Xuất dữ liệu ra JSON và nhập bản sao lưu JSON.
-- Xóa dữ liệu ứng dụng với bước xác nhận.
-
-## Cách sử dụng
-
-### 1. Mở ứng dụng
-
-1. Tải tệp `pomodoro.html` về thiết bị.
-2. Mở tệp bằng trình duyệt hiện đại.
-3. Ứng dụng mặc định mở ở màn hình Timer, giao diện Sáng và ngôn ngữ Tiếng Việt.
-
-Không cần cài đặt phần mềm, máy chủ hay kết nối Internet.
-
-### 2. Bắt đầu một phiên tập trung
-
-1. Chọn chế độ **Tập trung**.
-2. Nhấn nút bắt đầu ở giữa hai nút đặt lại và bỏ qua.
-3. Nhấn nút chính một lần nữa để tạm dừng; nhấn tiếp để tiếp tục.
-4. Dùng nút đặt lại để đưa phiên hiện tại về thời lượng đầy đủ.
-5. Dùng nút bỏ qua để chuyển sang chế độ kế tiếp mà không ghi nhận phiên Focus hiện tại là hoàn thành.
-
-Khi phiên kết thúc, ứng dụng ghi nhận kết quả, phát âm báo và hiển thị thông báo trong ứng dụng nếu tùy chọn này đang bật.
-
-### 3. Gắn phiên tập trung với công việc
-
-1. Nhấn dòng công việc bên dưới bộ đếm.
-2. Chọn một công việc có sẵn, hoặc tạo công việc mới.
-3. Bắt đầu phiên Focus. Khi phiên hoàn thành, kết quả sẽ được ghi nhận cho công việc đang chọn.
-
-Bạn có thể quản lý danh sách, mục tiêu và trạng thái công việc trong mục **Công việc**.
-
-### 4. Xem thống kê
-
-Mở mục **Thống kê** để xem dữ liệu trong ngày, tổng thời gian tập trung, biểu đồ 7 ngày và lịch sử phiên Focus.
-
-### 5. Tùy chỉnh ứng dụng
-
-Trong mục **Cài đặt**, bạn có thể:
-
-- Đổi thời lượng các chế độ và số phiên trước nghỉ dài.
-- Bật/tắt tự chuyển chế độ, tự bắt đầu nghỉ hoặc tự bắt đầu Focus.
-- Chọn âm báo và điều chỉnh âm lượng.
-- Bật thông báo trong ứng dụng hoặc cấp quyền thông báo trình duyệt.
-- Bật giữ màn hình luôn sáng nếu thiết bị hỗ trợ.
-- Xuất hoặc nhập dữ liệu JSON.
-
-Thay đổi thời lượng được áp dụng cho phiên mới; phiên đang chạy không bị thay đổi âm thầm.
-
-### 6. Đổi ngôn ngữ và giao diện
-
-Sử dụng hai nút ở góc trên bên phải:
-
-- **EN / VI:** chuyển giữa Tiếng Việt và English.
-- **Biểu tượng mặt trăng / mặt trời:** chuyển giữa giao diện Sáng và Tối.
-
-Ứng dụng lưu lựa chọn để sử dụng lại ở lần mở tiếp theo.
-
-## Phím tắt
-
-| Phím | Chức năng |
-|---|---|
-| `Space` | Bắt đầu / Tạm dừng / Tiếp tục |
-| `R` | Đặt lại phiên hiện tại |
-| `N` | Bỏ qua phiên hiện tại |
-| `F` | Bật / Tắt toàn màn hình |
-| `S` | Mở mục Cài đặt |
-| `Esc` | Đóng hộp thoại hoặc thông báo hoàn thành |
-
-Phím tắt không được kích hoạt khi con trỏ đang nhập liệu trong ô input, textarea hoặc phần tử có thể chỉnh sửa.
-
-Có thể mở bảng phím tắt bằng nút biểu tượng bàn phím trên thanh công cụ.
-
-## Dữ liệu và quyền riêng tư
-
-- Dữ liệu được lưu cục bộ trong LocalStorage của trình duyệt.
-- Ứng dụng không có tài khoản, máy chủ hay cơ chế đồng bộ dữ liệu lên dịch vụ bên ngoài.
-- Dữ liệu không tự động đồng bộ giữa các trình duyệt hoặc thiết bị.
-- Dùng **Xuất JSON** để tạo bản sao lưu và **Nhập JSON** để khôi phục trên cùng hoặc thiết bị khác.
-- Xóa dữ liệu trang web, hồ sơ trình duyệt hoặc dữ liệu trình duyệt có thể làm mất dữ liệu chưa sao lưu.
-
-## Lưu ý về trình duyệt
-
-Một số tiện ích phụ thuộc API và quyền của trình duyệt:
-
-- Notification API cần trình duyệt hỗ trợ và người dùng cấp quyền.
-- Screen Wake Lock chỉ hoạt động trên các trình duyệt/thiết bị tương thích.
-- Fullscreen API có thể bị giới hạn tùy trình duyệt và cách mở trang.
-- Web Audio có thể chỉ phát sau thao tác tương tác đầu tiên của người dùng.
-- Bộ đếm có thể khôi phục và đối soát thời gian khi người dùng quay lại ứng dụng, nhưng một trang HTML độc lập không thể bảo đảm JavaScript hoặc âm thanh tiếp tục chạy sau khi trình duyệt hay tab bị đóng hoàn toàn.
-- Hành vi lưu trữ LocalStorage khi mở trực tiếp bằng `file://` có thể khác nhau giữa các trình duyệt. Nếu dữ liệu không được giữ ổn định, hãy chạy ứng dụng qua GitHub Pages hoặc một máy chủ tĩnh và xuất bản sao lưu định kỳ.
-
-## Đưa dự án lên GitHub
-
-Đặt hai tệp sau trong thư mục gốc của repository:
-
-```text
-your-repository/
-├── README.md
-└── pomodoro.html
-```
-
-Sau đó commit và push lên GitHub. Người dùng có thể tải `pomodoro.html` trực tiếp từ repository.
-
-Nếu muốn mở ứng dụng bằng một địa chỉ web, có thể bật GitHub Pages cho repository và truy cập đường dẫn đến `pomodoro.html` trên trang GitHub Pages tương ứng.
-
-## Công nghệ
-
-- HTML5
-- CSS3
-- Vanilla JavaScript (ES6+)
-- Inline SVG
-- Web Audio API
-- Notification API
-- Fullscreen API
-- Screen Wake Lock API
-- LocalStorage
-
-Không sử dụng framework, thư viện JavaScript, CSS framework, CDN, font hoặc tài nguyên bên ngoài.
+[![Single File](https://img.shields.io/badge/single--file-HTML-22c55e?style=flat-square)](pomodoro.html)
+[![No Dependencies](https://img.shields.io/badge/dependencies-none-22c55e?style=flat-square)](#)
+[![Offline Ready](https://img.shields.io/badge/offline-ready-22c55e?style=flat-square)](#)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](#-giấy-phép)
 
 ---
 
-**Pomodoro** — Tập trung vào một việc, hoàn thành từng phiên, tiến bộ từng ngày.
+## 📖 Tổng quan
+
+**Pomodoro Timer** là một ứng dụng quản lý thời gian theo phương pháp Pomodoro, được đóng gói gọn gàng trong **một file HTML duy nhất**. Chỉ cần mở file bằng trình duyệt hiện đại là có thể sử dụng ngay — không cần máy chủ, không cần build, không phụ thuộc vào bất kỳ thư viện bên ngoài nào.
+
+Ứng dụng được thiết kế theo phong cách **tối giản – tinh tế – tập trung**, với hai giao diện sáng/tối, hai ngôn ngữ (Tiếng Việt / English), và toàn bộ dữ liệu được lưu trữ cục bộ trong trình duyệt của bạn.
+
+### Điểm nổi bật
+
+- 🪶 **Một file duy nhất** — `pomodoro.html`
+- 🔌 **Hoàn toàn offline** — không gọi API, không tải tài nguyên từ CDN
+- 🎨 **Hai giao diện** — Sáng / Tối (mặc định: Sáng)
+- 🌐 **Hai ngôn ngữ** — Tiếng Việt / English (mặc định: Tiếng Việt)
+- 📱 **Responsive** — hiển thị đẹp trên desktop, tablet và smartphone, không có cuộn ngang/dọc
+- ⏱️ **Đồng hồ chính xác** — dùng timestamp tuyệt đối, không bị lệch khi chuyển tab hay khóa máy
+- 💾 **Lưu dữ liệu tự động** — qua `localStorage`
+- 🔊 **Âm thanh & thông báo** — tổng hợp âm thanh bằng Web Audio API, hỗ trợ Notification API
+- ⌨️ **Phím tắt** đầy đủ cho người dùng thành thạo
+
+---
+
+## ✨ Chức năng
+
+### ⏱️ Đồng hồ Pomodoro
+
+- Ba chế độ: **Tập trung (Focus)**, **Nghỉ ngắn (Short Break)**, **Nghỉ dài (Long Break)**
+- Chu kỳ mặc định: **25 → 5 → 25 → 5 → 25 → 5 → 25 → 15** (phút)
+- Vòng tròn tiến trình trực quan, đổi màu theo chế độ:
+  - Focus → cam
+  - Short Break → xanh lá
+  - Long Break → xanh dương
+- Hiển thị **chấm chu kỳ** — biết đang ở phiên thứ mấy trước giờ nghỉ dài
+- Đồng hồ **không bị lệch** kể cả khi chuyển tab, khóa màn hình, hay đóng trình duyệt (dùng timestamp tuyệt đối)
+
+### ✅ Quản lý công việc
+
+- Tạo, sửa, xóa công việc
+- Đánh dấu hoàn thành / mở lại
+- Đặt **mục tiêu số phiên** cho mỗi công việc (ví dụ: 4 phiên)
+- Theo dõi tiến độ bằng thanh tiến trình
+- **Chọn công việc đang làm** — phiên focus hoàn thành sẽ tự cộng vào công việc đó
+- Công việc đã xóa vẫn giữ lịch sử phiên trong thống kê
+
+### 📊 Thống kê
+
+- **Hôm nay**: số phiên, tổng thời gian tập trung, số việc hoàn thành, thời lượng trung bình, số chu kỳ
+- **7 ngày qua**: biểu đồ cột trực quan + tổng tuần + trung bình ngày
+- **Toàn thời gian**: tổng số phiên, tổng thời gian, ngày năng suất nhất, ngày tập trung dài nhất, chuỗi ngày liên tiếp (streak)
+
+### ⚙️ Cài đặt
+
+- **Timer**: thời lượng Focus / Nghỉ ngắn / Nghỉ dài, số phiên trước nghỉ dài, tự động bắt đầu
+- **Âm thanh**: bật/tắt, 4 kiểu âm (Bíp / Chuông / Báo thức / Du dương), âm lượng, nghe thử
+- **Thông báo**: thông báo trình duyệt, thông báo trong app, giữ màn hình sáng (Screen Wake Lock)
+- **Dữ liệu**: xuất/nhập JSON, xóa toàn bộ dữ liệu
+
+### 🌗 Giao diện & Ngôn ngữ
+
+- Nút chuyển **Sáng / Tối** ở góc trên bên phải
+- Nút chuyển **VI / EN** ngay cạnh nút giao diện
+- Toàn bộ nội dung (bao gồm thông báo, modal, tooltip) đều được dịch
+
+### 🔊 Thông báo & Âm thanh
+
+- Âm thanh được **tổng hợp trực tiếp bằng Web Audio API** — không cần file MP3/WAV
+- Thông báo hệ thống qua **Notification API** (yêu cầu cấp quyền)
+- Thông báo trong ứng dụng (toast) luôn hoạt động như phương án dự phòng
+
+### 💾 Dữ liệu
+
+- Tự động lưu sau mỗi thay đổi quan trọng
+- Phục hồi chính xác sau khi đóng/mở lại trình duyệt
+- Nếu phiên đã hết trong lúc trang đóng → tự động ghi nhận đúng **một lần**, không nhân đôi
+- Xuất bản sao lưu dạng JSON, nhập lại khi cần
+
+---
+
+## ⌨️ Phím tắt
+
+| Phím | Chức năng |
+|:---:|-----------|
+| <kbd>Space</kbd> | Bắt đầu / Tạm dừng / Tiếp tục |
+| <kbd>R</kbd> | Đặt lại đồng hồ |
+| <kbd>N</kbd> | Bỏ qua phiên hiện tại |
+| <kbd>F</kbd> | Bật / tắt toàn màn hình |
+| <kbd>S</kbd> | Mở Cài đặt |
+| <kbd>Esc</kbd> | Đóng hộp thoại / thoát toàn màn hình |
+
+> ⚠️ Phím tắt **không hoạt động** khi bạn đang gõ trong ô nhập liệu, và không ghi đè phím tắt hệ thống của trình duyệt (Ctrl/Cmd/Alt).
+
+---
+
+## 🚀 Cách sử dụng
+
+### Bước 1 — Tải file
+
+Tải file `pomodoro.html` từ repository này về máy:
+
+```bash
+# Nếu dùng Git
+git clone https://github.com/<your-username>/<your-repo>.git
+
+# Hoặc chỉ cần tải trực tiếp file pomodoro.html
+```
+
+### Bước 2 — Mở bằng trình duyệt
+
+- **Trên desktop**: nhấp đúp vào file `pomodoro.html`
+- **Trên mobile**: mở file bằng trình duyệt (Chrome, Safari, Firefox, Edge…)
+
+Không cần cài đặt gì thêm. Ứng dụng sẽ chạy ngay.
+
+### Bước 3 — Sử dụng hằng ngày
+
+1. **Thêm công việc** — vào tab **Việc**, nhấn **+ Thêm**
+2. **Chọn công việc đang làm** — nhấn vào dòng công việc (hoặc dùng nút trên tab Đồng hồ)
+3. **Bắt đầu phiên tập trung** — nhấn **Bắt đầu** (hoặc <kbd>Space</kbd>)
+4. **Nghỉ khi hết giờ** — ứng dụng tự chuyển sang chế độ nghỉ phù hợp
+5. **Xem tiến độ** — vào tab **Thống kê** để xem thành tích
+6. **Tùy chỉnh** — vào tab **Cài đặt** để đổi thời lượng, âm thanh, ngôn ngữ…
+
+### 💡 Mẹo sử dụng hiệu quả
+
+- **Bật thông báo trình duyệt** trong Cài đặt để không bỏ lỡ khi hết giờ
+- **Bật "Giữ màn hình sáng"** khi làm việc trên laptop để màn hình không tự tắt
+- **Xuất JSON định kỳ** để sao lưu dữ liệu (dữ liệu chỉ lưu trong trình duyệt, có thể mất nếu xóa cache)
+- **Dùng phím tắt** để thao tác nhanh hơn khi đang tập trung
+- **Thêm vào màn hình chính** (Add to Home Screen) trên điện thoại để mở như một ứng dụng
+
+### 🌐 Tương thích trình duyệt
+
+| Trình duyệt | Hỗ trợ |
+|---|---|
+| Chrome / Edge (phiên bản mới) | ✅ Đầy đủ |
+| Firefox | ✅ Đầy đủ |
+| Safari (macOS / iOS) | ✅ Đầy đủ (một số giới hạn về Screen Wake Lock) |
+| Trình duyệt cũ / IE | ❌ Không hỗ trợ |
+
+> Một số tính năng như **Screen Wake Lock** hoặc **Notification** có thể không khả dụng trên tất cả thiết bị — ứng dụng sẽ tự động chuyển sang phương án dự phòng.
+
+---
+
+## 🔒 Quyền riêng tư & Dữ liệu
+
+- **Không có máy chủ**, không thu thập dữ liệu, không theo dõi
+- Toàn bộ dữ liệu (công việc, phiên, cài đặt) được lưu trong `localStorage` của trình duyệt
+- Dữ liệu **chỉ tồn tại trên thiết bị của bạn** — xóa cache trình duyệt sẽ xóa dữ liệu
+- Nên **xuất JSON định kỳ** để sao lưu
+
+---
+
+## 📁 Cấu trúc dự án
+
+```
+.
+└── pomodoro.html    # Toàn bộ ứng dụng trong một file duy nhất
+```
+
+---
+
+## 🛠 Công nghệ sử dụng
+
+- **HTML5** — semantic markup
+- **CSS3** — custom properties, flexbox, grid, responsive design
+- **Vanilla JavaScript (ES6+)** — không framework, không thư viện
+- **Web Audio API** — tổng hợp âm thanh
+- **Notification API** — thông báo hệ thống
+- **Screen Wake Lock API** — giữ màn hình sáng
+- **Fullscreen API** — chế độ toàn màn hình
+- **LocalStorage** — lưu dữ liệu cục bộ
+
+---
+
+## 🤝 Đóng góp
+
+Nếu bạn muốn đóng góp:
+
+1. Fork repository
+2. Tạo nhánh mới: `git checkout -b feature/ten-tinh-nang`
+3. Commit thay đổi: `git commit -m "Thêm tính năng X"`
+4. Push: `git push origin feature/ten-tinh-nang`
+5. Mở Pull Request
+
+---
+
+## 📄 Giấy phép
+
+Dự án được phát hành theo giấy phép **MIT**. Bạn có thể tự do sử dụng, sửa đổi và phân phối.
+
+---
+
+## 🙏 Ghi công
+
+- Phương pháp **Pomodoro** được phát triển bởi [Francesco Cirillo](https://en.wikipedia.org/wiki/Pomodoro_Technique)
+- Biểu tượng sử dụng inline SVG, không phụ thuộc thư viện icon bên ngoài
+
+---
+
+<div align="center">
+
+**Made with ❤️ for focused people**
+
+⭐ Nếu bạn thấy hữu ích, hãy tặng repo một ngôi sao!
+
+</div>
