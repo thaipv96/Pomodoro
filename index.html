@@ -1,0 +1,1863 @@
+<!doctype html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8">
+<meta name="application-name" content="Pomodoro">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%23101114%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2234%22%20r%3D%2221%22%20fill%3D%22none%22%20stroke%3D%22%23f5a623%22%20stroke-width%3D%224.5%22%2F%3E%3Cpath%20d%3D%22M25%206h14M32%206v6M47.5%2017.5l4-4%22%20fill%3D%22none%22%20stroke%3D%22%23f5a623%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M32%2021v13l9%205%22%20fill%3D%22none%22%20stroke%3D%22%23f5a623%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<meta name="color-scheme" content="light dark">
+<title>25:00 | Tập trung | Pomodoro</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#000;--surface:#080808;--surface-2:#111;--surface-3:#171717;--surface-4:#202020;
+  --line:#252525;--line-soft:#1b1b1b;--text:#f5f5f5;--sub:#a0a0a0;--muted:#696969;
+  --focus:#f5a623;--short:#34d399;--long:#60a5fa;--danger:#f16f6f;--success:#49c98b;
+  --accent:var(--focus);--radius:22px;--radius-sm:14px;--shadow:0 24px 80px rgba(0,0,0,.55);
+  --font:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{min-width:320px;background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button:disabled{opacity:.42;cursor:not-allowed}
+::selection{background:rgba(245,166,35,.28)}
+.app-shell{min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:76px;flex:0 0 76px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,58px);border-bottom:1px solid var(--line-soft);background:rgba(0,0,0,.92);position:sticky;top:0;z-index:20;backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:12px;min-width:190px}
+.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1px solid #333;border-radius:11px;background:linear-gradient(145deg,#171717,#050505);color:var(--focus)}
+.brand-name{font-size:15px;font-weight:650;letter-spacing:-.35px}.brand-caption{font-size:10px;color:var(--muted);letter-spacing:1.7px;text-transform:uppercase;margin-top:1px}
+.nav{display:flex;align-items:center;gap:5px;padding:5px;border:1px solid var(--line-soft);border-radius:15px;background:#090909}
+.nav-btn{border:0;background:transparent;color:var(--sub);padding:9px 16px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .2s,color .2s;font-size:13px;font-weight:550;white-space:nowrap}
+.nav-btn:hover{color:var(--text);background:#151515}.nav-btn.active{background:#202020;color:#fff;box-shadow:inset 0 0 0 1px #2d2d2d}
+.nav-btn svg{width:15px;height:15px;opacity:.82}
+.header-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;min-width:190px}
+.icon-btn{width:38px;height:38px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--sub);display:grid;place-items:center;cursor:pointer;transition:.2s}
+.icon-btn:hover{background:#171717;border-color:#292929;color:#fff}.icon-btn svg{width:17px;height:17px}
+.status-pill{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:7px 10px;border-radius:99px;color:var(--sub);font-size:11px;margin-right:3px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+main{width:min(1440px,100%);margin:0 auto;padding:clamp(22px,3.2vw,46px) clamp(16px,4vw,58px) 62px;flex:1}
+.view{display:none;animation:fade-in .24s ease both}.view.active{display:block}
+@keyframes fade-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.page-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:27px}
+.eyebrow{color:var(--muted);font-size:10px;font-weight:650;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:7px}
+h1,h2,h3,p{margin-top:0}h1{font-size:clamp(26px,3vw,34px);line-height:1.15;letter-spacing:-1.1px;margin:0;font-weight:650}h2{font-size:18px;letter-spacing:-.4px;margin:0;font-weight:620}h3{font-size:14px;letter-spacing:-.2px;margin:0;font-weight:600}
+.page-description{color:var(--sub);font-size:13px;margin:8px 0 0}
+.btn{border:1px solid var(--line);background:#141414;color:#eaeaea;border-radius:13px;padding:10px 15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;font-size:12px;font-weight:600;transition:transform .16s,background .16s,border-color .16s;min-height:40px}
+.btn:hover{background:#202020;border-color:#3a3a3a}.btn:active{transform:scale(.97)}.btn svg{width:15px;height:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#16120b;font-weight:720}.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--sub)}.btn.ghost:hover{background:#171717;color:#fff;border-color:#262626}
+.btn.danger{color:#ff9a9a;border-color:#492323;background:#1b0d0d}.btn.small{min-height:32px;padding:6px 10px;border-radius:10px;font-size:11px}
+.card{background:linear-gradient(145deg,#101010,#080808);border:1px solid var(--line-soft);border-radius:var(--radius);box-shadow:0 10px 38px rgba(0,0,0,.16)}
+.timer-layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,.75fr);gap:18px;align-items:stretch}
+.timer-main{position:relative;min-height:660px;padding:34px 38px 30px;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.timer-main:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 43%,color-mix(in srgb,var(--accent) 7%,transparent),transparent 48%);transition:background .4s}
+.timer-topline{position:relative;z-index:1;width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mode-switch{display:flex;gap:4px;background:#080808;padding:4px;border:1px solid #202020;border-radius:13px}
+.mode-btn{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:8px 13px;font-size:11px;font-weight:650;cursor:pointer;transition:.2s;white-space:nowrap}
+.mode-btn:hover{color:#ddd}.mode-btn.active{color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,#101010);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 25%,transparent)}
+.cycle-indicator{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:11px;white-space:nowrap}.cycle-dots{display:flex;gap:4px}.cycle-dot{width:6px;height:6px;border-radius:50%;background:#292929}.cycle-dot.done{background:var(--focus)}
+.timer-center{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;padding:30px 0 26px}
+.timer-ring-wrap{position:relative;width:min(390px,70vw);max-width:390px;aspect-ratio:1;display:grid;place-items:center}
+.timer-ring{width:100%;height:100%;overflow:visible;transform:rotate(-90deg)}
+.ring-track{fill:none;stroke:#242424;stroke-width:5.5}.ring-progress{fill:none;stroke:var(--accent);stroke-width:5.5;stroke-linecap:round;stroke-dasharray:100 100;stroke-dashoffset:0;transition:stroke .3s;filter:drop-shadow(0 0 5px color-mix(in srgb,var(--accent) 28%,transparent))}
+.ring-inner{position:absolute;inset:14%;border-radius:50%;background:radial-gradient(circle at 50% 42%,#111 0%,#080808 65%,#050505 100%);border:1px solid #1c1c1c;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 0 0 40px rgba(0,0,0,.65)}
+.timer-mode-label{font-size:11px;letter-spacing:2.1px;text-transform:uppercase;color:var(--accent);font-weight:750;margin-bottom:5px}
+.time-display{font-size:clamp(62px,8vw,92px);line-height:1.04;letter-spacing:-5px;font-weight:620;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;white-space:nowrap}
+.timer-state-label{font-size:12px;color:var(--muted);margin-top:11px}
+.session-context{position:relative;z-index:1;text-align:center;color:var(--sub);font-size:12px;margin-top:6px}
+.timer-controls{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:12px;margin-top:2px}
+.control-main{min-width:168px;height:52px;border-radius:16px;font-size:14px;letter-spacing:-.1px;box-shadow:0 7px 25px color-mix(in srgb,var(--accent) 12%,transparent)}
+.control-secondary{width:46px;height:46px;border-radius:15px;padding:0;display:grid;place-items:center;background:#171717;border-color:#292929;color:#c8c8c8}.control-secondary svg{width:17px;height:17px}
+.timer-bottom{position:relative;z-index:1;width:100%;display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid #1c1c1c;padding-top:18px;margin-top:26px}
+.active-task-mini{display:flex;align-items:center;gap:9px;min-width:0;color:var(--sub);font-size:12px}.task-mini-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:#171717;color:var(--accent);flex-shrink:0}.task-mini-copy{min-width:0}.task-mini-label{font-size:10px;color:var(--muted)}.task-mini-name{font-weight:560;color:#ddd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px;margin-top:1px}
+.link-btn{border:0;background:none;color:var(--sub);font-size:11px;cursor:pointer;padding:7px 0}.link-btn:hover{color:#fff}
+.side-stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.side-card{padding:23px 22px}.side-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:19px}.side-card-title{font-size:13px;font-weight:650}.subtle-label{color:var(--muted);font-size:10px}
+.task-select-wrap{position:relative}.field-label{display:block;color:var(--sub);font-size:11px;margin-bottom:8px}
+.field,select.field{width:100%;min-height:42px;border:1px solid #2a2a2a;border-radius:12px;background:#0b0b0b;color:#eee;padding:10px 12px;font-size:12px;outline:none}
+.field::placeholder{color:#555}.field:focus,select.field:focus{border-color:color-mix(in srgb,var(--accent) 65%,#444)}
+select.field{appearance:none;padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.quick-add{display:flex;align-items:center;gap:8px;margin-top:10px;color:var(--sub);font-size:11px;cursor:pointer;border:0;background:none;padding:5px 0}.quick-add:hover{color:#fff}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{padding:13px 14px;background:#0b0b0b;border:1px solid #1e1e1e;border-radius:14px;min-width:0}.metric-value{font-size:22px;font-weight:650;letter-spacing:-.7px;font-variant-numeric:tabular-nums}.metric-label{font-size:10px;color:var(--muted);margin-top:2px}
+.cycle-note{display:flex;gap:10px;align-items:flex-start;color:var(--sub);font-size:11px;line-height:1.55}.cycle-note svg{width:16px;height:16px;flex-shrink:0;color:var(--accent);margin-top:1px}
+.shortcut-hint{color:var(--muted);font-size:10px;text-align:center;margin-top:auto;padding-top:14px}
+kbd{font:inherit;font-size:10px;color:#bbb;background:#1a1a1a;border:1px solid #303030;border-radius:5px;padding:2px 5px;margin:0 2px}
+/* Tasks */
+.task-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.task-list{display:flex;flex-direction:column;gap:9px}.task-row{display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:13px;padding:16px 18px;background:#0b0b0b;border:1px solid #202020;border-radius:16px;transition:border-color .2s,background .2s}.task-row:hover{border-color:#353535;background:#0e0e0e}.task-check{appearance:none;width:19px;height:19px;border:1px solid #555;border-radius:6px;background:#090909;display:grid;place-items:center;cursor:pointer;margin:0}.task-check:checked{background:var(--success);border-color:var(--success)}.task-check:checked:after{content:"";width:8px;height:4px;border-left:2px solid #07150e;border-bottom:2px solid #07150e;transform:rotate(-45deg);margin-top:-2px}
+.task-row.completed .task-name{text-decoration:line-through;color:#777}.task-main{min-width:0}.task-name{font-size:13px;font-weight:570;overflow-wrap:anywhere}.task-meta{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:10px;margin-top:5px;flex-wrap:wrap}.task-progress{height:3px;width:min(170px,24vw);background:#252525;border-radius:9px;overflow:hidden}.task-progress>span{display:block;height:100%;background:var(--accent);border-radius:9px}.task-actions{display:flex;align-items:center;gap:3px}.task-actions .icon-btn{width:34px;height:34px}
+.empty-state{padding:58px 24px;text-align:center;border:1px dashed #292929;border-radius:20px;color:var(--sub)}.empty-icon{width:45px;height:45px;border-radius:15px;background:#151515;display:grid;place-items:center;margin:0 auto 15px;color:#777}.empty-icon svg{width:20px;height:20px}.empty-state h3{color:#ddd;margin-bottom:7px}.empty-state p{font-size:12px;color:var(--muted);margin:0 auto 17px;max-width:340px}
+/* Statistics */
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat-card{padding:20px 21px;min-height:118px}.stat-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:11px}.stat-icon{width:29px;height:29px;border-radius:10px;background:#191919;display:grid;place-items:center;color:var(--accent)}.stat-icon svg{width:15px;height:15px}.stat-number{font-size:29px;font-weight:650;letter-spacing:-1px;font-variant-numeric:tabular-nums;margin-top:14px}.stat-foot{font-size:10px;color:var(--muted);margin-top:1px}
+.stats-panels{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(260px,.8fr);gap:16px}.panel{padding:22px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}.panel-sub{font-size:10px;color:var(--muted);margin-top:4px}.chart-wrap{width:100%;overflow:hidden}.weekly-chart{width:100%;height:auto;display:block;overflow:visible}.chart-grid-line{stroke:#242424;stroke-width:1;stroke-dasharray:3 5}.chart-label{fill:#777;font-size:10px;font-family:var(--font)}.chart-value{fill:#aaa;font-size:10px;font-family:var(--font)}.chart-bar{fill:var(--accent);opacity:.78}.chart-bar.today{opacity:1}.chart-empty{fill:#252525}
+.insight-list{display:flex;flex-direction:column;gap:0}.insight{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid #202020;font-size:11px}.insight:last-child{border-bottom:0}.insight span{color:var(--sub)}.insight strong{color:#eee;font-size:12px;font-weight:650;text-align:right}.stats-note{font-size:10px;color:var(--muted);margin-top:16px;line-height:1.6}
+/* Settings */
+.settings-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:17px;align-items:start}.settings-nav{padding:9px;position:sticky;top:96px}.settings-tab{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:var(--sub);padding:11px 12px;border-radius:11px;text-align:left;font-size:12px;cursor:pointer}.settings-tab:hover{background:#171717;color:#fff}.settings-tab.active{background:#1b1b1b;color:#fff}.settings-tab svg{width:16px;height:16px;color:#929292}.settings-content{min-width:0}.settings-panel{display:none;padding:26px}.settings-panel.active{display:block}.settings-section-title{margin-bottom:7px}.settings-section-desc{color:var(--muted);font-size:11px;margin-bottom:23px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid #202020}.setting-row:last-child{border-bottom:0}.setting-copy{min-width:0}.setting-name{font-size:12px;font-weight:580}.setting-help{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.5;max-width:500px}.setting-control{flex:0 0 auto;display:flex;align-items:center;gap:8px}.setting-control .field{width:100px;min-height:37px}.setting-control select.field{width:160px}.toggle{appearance:none;width:42px;height:24px;border-radius:99px;background:#333;border:1px solid #444;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}.toggle:before{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#aaa;top:3px;left:3px;transition:.2s}.toggle:checked{background:var(--accent);border-color:var(--accent)}.toggle:checked:before{left:21px;background:#15120d}.range-control{display:flex;align-items:center;gap:9px}.range-control input{width:112px;accent-color:var(--accent)}.range-value{font-size:10px;color:#ddd;min-width:32px;text-align:right;font-variant-numeric:tabular-nums}.setting-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.shortcut-table{width:100%;border-collapse:collapse;font-size:11px}.shortcut-table td{padding:11px 0;border-bottom:1px solid #202020;color:var(--sub)}.shortcut-table td:last-child{text-align:right;color:#ddd}.data-warning{border:1px solid #42371f;background:#18140c;color:#b9a477;padding:12px 14px;border-radius:12px;font-size:10px;line-height:1.6;margin-top:18px}
+/* Modal / toast */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(9px);z-index:60;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex;animation:fade-in .16s ease}.modal{width:min(440px,100%);background:#111;border:1px solid #303030;border-radius:22px;box-shadow:var(--shadow);padding:24px;animation:modal-in .2s ease}.modal.wide{width:min(540px,100%)}@keyframes modal-in{from{transform:translateY(9px) scale(.985);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.modal-title{font-size:17px;font-weight:650;letter-spacing:-.4px}.modal-close{width:32px;height:32px;border:0;border-radius:10px;background:#202020;color:#aaa;display:grid;place-items:center;cursor:pointer}.modal-close:hover{color:#fff}.form-group{margin-bottom:15px}.form-group label{display:block;font-size:11px;color:var(--sub);margin-bottom:7px}.form-help{font-size:10px;color:var(--muted);margin-top:6px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:23px}.completion-mark{width:52px;height:52px;border-radius:17px;background:color-mix(in srgb,var(--accent) 14%,#151515);display:grid;place-items:center;color:var(--accent);margin:0 auto 15px}.completion-mark svg{width:24px;height:24px}.completion-body{text-align:center}.completion-body h2{font-size:21px;margin-bottom:7px}.completion-body p{font-size:12px;color:var(--sub);margin-bottom:20px}.completion-detail{display:flex;justify-content:center;gap:18px;color:var(--muted);font-size:10px;margin-bottom:19px}.completion-detail strong{color:#ddd;font-weight:650}
+.toast-region{position:fixed;right:22px;bottom:22px;display:flex;flex-direction:column;gap:8px;z-index:90;pointer-events:none}.toast{max-width:min(360px,calc(100vw - 32px));padding:12px 15px;background:#1a1a1a;border:1px solid #373737;border-radius:13px;box-shadow:0 12px 38px #000b;color:#eee;font-size:11px;animation:toast-in .2s ease;display:flex;align-items:center;gap:9px}.toast:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--success);flex-shrink:0}.toast.error:before{background:var(--danger)}@keyframes toast-in{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.file-input-hidden{display:none}.mobile-bottom{display:none}.storage-status{font-size:10px;color:var(--muted)}
+@media(max-width:1050px){.timer-layout{grid-template-columns:minmax(0,1fr) 280px}.timer-main{padding-left:24px;padding-right:24px;min-height:620px}.timer-ring-wrap{width:min(340px,56vw)}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.settings-layout{grid-template-columns:190px minmax(0,1fr)}}
+@media(max-width:800px){.topbar{height:68px;flex-basis:68px;padding:0 20px}.brand{min-width:auto}.brand-caption{display:none}.header-actions{min-width:auto}.status-pill{display:none}.nav{gap:2px}.nav-btn{padding:9px 11px}.nav-btn span{display:none}.nav-btn svg{width:17px;height:17px}.timer-layout{grid-template-columns:1fr}.timer-main{min-height:600px}.timer-ring-wrap{width:min(360px,58vw)}.side-stack{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.side-card:last-child{grid-column:auto}.stats-panels{grid-template-columns:1fr}.settings-layout{grid-template-columns:1fr}.settings-nav{position:static;display:flex;overflow-x:auto;gap:4px;padding:6px}.settings-tab{width:auto;white-space:nowrap;padding:9px 12px}.settings-tab span{display:inline}.settings-tab svg{display:none}main{padding-top:28px}}
+@media(max-width:560px){body{font-size:13px}.topbar{height:62px;flex-basis:62px;padding:0 15px}.brand-mark{width:31px;height:31px}.brand-name{font-size:14px}.nav{padding:3px;border-radius:12px}.nav-btn{padding:8px 9px;border-radius:9px}.header-actions{gap:2px}.header-actions .icon-btn{width:34px;height:34px}main{padding:20px 13px 96px}.page-heading{align-items:flex-start;margin-bottom:20px}.page-heading h1{font-size:27px}.page-description{font-size:11px}.timer-main{min-height:570px;padding:20px 15px 19px;border-radius:20px}.timer-topline{align-items:flex-start}.mode-switch{gap:1px;padding:3px}.mode-btn{padding:8px 9px;font-size:10px}.cycle-indicator{font-size:9px;gap:5px;padding-top:8px}.cycle-dots{gap:3px}.cycle-dot{width:5px;height:5px}.timer-center{padding:19px 0}.timer-ring-wrap{width:min(330px,82vw)}.time-display{font-size:clamp(64px,18vw,84px);letter-spacing:-4px}.timer-mode-label{font-size:10px}.timer-state-label{font-size:11px}.session-context{font-size:10px}.timer-controls{gap:9px}.control-main{min-width:145px;height:48px;font-size:13px}.control-secondary{height:43px;width:43px}.timer-bottom{margin-top:18px;padding-top:14px}.task-name{max-width:185px}.side-stack{grid-template-columns:1fr;gap:10px}.side-card:last-child{grid-column:auto}.side-card{padding:18px}.metric-value{font-size:20px}.stats-grid{gap:8px}.stat-card{padding:15px;min-height:106px}.stat-number{font-size:25px}.stats-panels{gap:10px}.panel{padding:17px}.settings-panel{padding:18px}.setting-row{gap:12px}.setting-control select.field{width:135px}.setting-control .field{width:82px}.range-control input{width:80px}.task-row{padding:13px 12px;gap:9px}.task-progress{width:75px}.task-actions .icon-btn{width:30px;height:30px}.toast-region{right:12px;bottom:82px}.mobile-bottom{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:25;padding:8px 12px calc(8px + env(safe-area-inset-bottom));background:rgba(5,5,5,.94);border-top:1px solid #202020;justify-content:space-around;backdrop-filter:blur(18px)}.mobile-bottom button{border:0;background:transparent;color:#777;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;padding:4px 10px}.mobile-bottom button.active{color:#fff}.mobile-bottom svg{width:18px;height:18px}}
+@media(max-width:380px){.brand{gap:8px}.brand-name{font-size:12px}.brand-mark{width:28px;height:28px}.nav-btn{padding:7px}.header-actions .icon-btn{width:31px}.timer-main{padding-left:11px;padding-right:11px}.mode-btn{padding:7px 7px;font-size:9px}.cycle-indicator{font-size:8px}.time-display{font-size:62px}.control-main{min-width:130px}.control-secondary{width:39px;height:41px}}
+@media(orientation:landscape) and (max-height:540px) and (max-width:950px){.topbar{height:54px;flex-basis:54px}.timer-layout{grid-template-columns:minmax(0,1.3fr) minmax(220px,.7fr)}.timer-main{min-height:420px;padding:15px 18px}.timer-ring-wrap{width:min(250px,44vh)}.timer-center{padding:5px 0}.time-display{font-size:58px}.timer-bottom{margin-top:8px;padding-top:9px}.side-stack{display:flex}.side-card{padding:13px}.metric{padding:8px}.metric-value{font-size:17px}main{padding-top:12px}}
+@media(min-width:1500px){.timer-main{min-height:700px}.timer-ring-wrap{width:410px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Light theme, compact controls and language-stable geometry */
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f4f5f7;--surface:#fff;--surface-2:#fff;--surface-3:#f1f2f4;--surface-4:#e8eaee;
+  --line:#dfe2e7;--line-soft:#e8eaee;--text:#202124;--sub:#60656f;--muted:#858b95;
+  --focus:#b86b00;--short:#168453;--long:#2867c7;--danger:#c53f3f;--success:#198653;
+  --shadow:0 22px 60px rgba(24,32,44,.13);
+}
+:root[data-theme="light"] body{background:var(--bg);color:var(--text)}
+:root[data-theme="light"] .topbar{background:rgba(255,255,255,.94);border-bottom-color:#e5e7eb}
+:root[data-theme="light"] .brand-mark{background:linear-gradient(145deg,#fff,#f1f2f4);border-color:#dfe2e7;color:var(--focus)}
+:root[data-theme="light"] .nav{background:#f0f1f3;border-color:#e2e4e8}
+:root[data-theme="light"] .nav-btn{color:#69707a}
+:root[data-theme="light"] .nav-btn:hover{background:#e7e9ed;color:#202124}
+:root[data-theme="light"] .nav-btn.active{background:#fff;color:#202124;box-shadow:0 1px 4px rgba(20,25,34,.09),inset 0 0 0 1px #e4e6ea}
+:root[data-theme="light"] .icon-btn{color:#666d77}
+:root[data-theme="light"] .icon-btn:hover{background:#eef0f3;border-color:#e0e3e8;color:#202124}
+:root[data-theme="light"] .language-btn{background:#eef0f3;border-color:#e0e3e8;color:#3e444d}
+:root[data-theme="light"] .language-btn:hover{background:#e4e7ec}
+:root[data-theme="light"] .status-pill{border-color:#e1e4e8}
+:root[data-theme="light"] .btn{background:#fff;color:#333941;border-color:#dfe2e7}
+:root[data-theme="light"] .btn:hover{background:#f0f2f5;border-color:#cfd4dc}
+:root[data-theme="light"] .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="light"] .btn.ghost{background:transparent;color:var(--sub)}
+:root[data-theme="light"] .btn.ghost:hover{background:#edf0f3;color:#202124;border-color:#e0e3e8}
+:root[data-theme="light"] .btn.danger{color:#a52b2b;border-color:#efcaca;background:#fff5f5}
+:root[data-theme="light"] .card{background:#fff;border-color:#e4e6eb;box-shadow:0 8px 28px rgba(20,27,38,.055)}
+:root[data-theme="light"] .timer-main:before{opacity:.75}
+:root[data-theme="light"] .mode-switch{background:#f0f1f3;border-color:#e1e4e8}
+:root[data-theme="light"] .mode-btn{color:#7d838d}
+:root[data-theme="light"] .mode-btn:hover{color:#343941}
+:root[data-theme="light"] .mode-btn.active{background:#fff;color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 24%,#fff),0 1px 3px rgba(20,25,34,.06)}
+:root[data-theme="light"] .cycle-dot{background:#d8dce2}
+:root[data-theme="light"] .ring-track{stroke:#e5e8ed}
+:root[data-theme="light"] .ring-inner{background:radial-gradient(circle at 50% 42%,#fff 0%,#fafbfc 68%,#f4f5f7 100%);border-color:#e8eaee;box-shadow:inset 0 0 30px rgba(26,36,50,.035)}
+:root[data-theme="light"] .control-secondary{background:#fff;border-color:#e0e3e8;color:#59616c}
+:root[data-theme="light"] .control-secondary:hover{background:#f0f2f5;color:#242830}
+:root[data-theme="light"] .timer-bottom{border-top-color:#e8eaee}
+:root[data-theme="light"] .task-mini-icon{background:#f0f2f5}
+:root[data-theme="light"] .task-mini-name{color:#303740}
+:root[data-theme="light"] .link-btn:hover{color:#202124}
+:root[data-theme="light"] .field, :root[data-theme="light"] select.field{background:#fff;border-color:#dfe3e8;color:#272c33}
+:root[data-theme="light"] .field::placeholder{color:#a0a5ad}
+:root[data-theme="light"] .quick-add:hover{color:#202124}
+:root[data-theme="light"] .metric{background:#f8f9fa;border-color:#e8eaee}
+:root[data-theme="light"] .cycle-note{color:var(--sub)}
+:root[data-theme="light"] kbd{color:#5e6570;background:#f0f2f5;border-color:#dfe3e8}
+:root[data-theme="light"] .task-row{background:#fff;border-color:#e5e8ed}
+:root[data-theme="light"] .task-row:hover{border-color:#cfd5de;background:#fbfcfd}
+:root[data-theme="light"] .task-check{background:#fff;border-color:#b9c0ca}
+:root[data-theme="light"] .task-progress{background:#e6e9ee}
+:root[data-theme="light"] .empty-state{border-color:#d9dee5;background:rgba(255,255,255,.55)}
+:root[data-theme="light"] .empty-icon{background:#f0f2f5;color:#737b86}
+:root[data-theme="light"] .empty-state h3{color:#303740}
+:root[data-theme="light"] .stat-icon{background:#f0f2f5}
+:root[data-theme="light"] .chart-grid-line{stroke:#e2e6eb}
+:root[data-theme="light"] .chart-label{fill:#777f89}
+:root[data-theme="light"] .chart-value{fill:#555d67}
+:root[data-theme="light"] .chart-empty{fill:#e2e6eb}
+:root[data-theme="light"] .insight{border-bottom-color:#eceef1}
+:root[data-theme="light"] .insight strong{color:#303740}
+:root[data-theme="light"] .settings-tab{color:#646b75}
+:root[data-theme="light"] .settings-tab:hover{background:#f0f2f5;color:#202124}
+:root[data-theme="light"] .settings-tab.active{background:#edf0f4;color:#252a31}
+:root[data-theme="light"] .settings-tab svg{color:#737b86}
+:root[data-theme="light"] .setting-row{border-bottom-color:#eceef1}
+:root[data-theme="light"] .toggle{background:#d9dde3;border-color:#cbd1d9}
+:root[data-theme="light"] .toggle:before{background:#fff}
+:root[data-theme="light"] .range-value{color:#515963}
+:root[data-theme="light"] .shortcut-table td{border-bottom-color:#eceef1}
+:root[data-theme="light"] .shortcut-table td:last-child{color:#353c45}
+:root[data-theme="light"] .data-warning{background:#fff9e9;border-color:#f0dfb5;color:#80631e}
+:root[data-theme="light"] .modal{background:#fff;border-color:#e0e4e9}
+:root[data-theme="light"] .modal-close{background:#f0f2f5;color:#68707b}
+:root[data-theme="light"] .modal-close:hover{color:#202124}
+:root[data-theme="light"] .completion-mark{background:color-mix(in srgb,var(--accent) 12%,#fff)}
+:root[data-theme="light"] .completion-detail strong{color:#303740}
+:root[data-theme="light"] .toast{background:#fff;border-color:#e0e4e9;color:#303740;box-shadow:0 12px 32px rgba(25,35,48,.14)}
+:root[data-theme="light"] .mobile-bottom{background:rgba(255,255,255,.96);border-top-color:#e3e6eb}
+:root[data-theme="light"] .mobile-bottom button{color:#858c96}
+:root[data-theme="light"] .mobile-bottom button.active{color:#252a31}
+/* Keep interface geometry stable across Vietnamese and English labels. */
+.brand-caption{display:none}
+.status-pill{display:none!important}
+.brand{min-width:145px}
+.header-actions{min-width:auto;gap:6px}
+.nav-btn{min-width:82px;justify-content:center}
+.language-btn{width:40px;height:38px;flex:0 0 40px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--sub);display:grid;place-items:center;font-size:11px;font-weight:750;letter-spacing:.35px;cursor:pointer;transition:.2s;font-variant-numeric:tabular-nums}
+.language-btn:hover{background:#171717;border-color:#292929;color:var(--text)}
+#themeToggle svg{width:18px;height:18px}
+.mode-switch{width:262px;flex:0 0 262px}
+.mode-btn{width:82px;min-width:82px;text-align:center}
+.timer-topline{min-width:0}
+.cycle-indicator{width:84px;min-width:84px;flex:0 0 84px;justify-content:flex-end}
+.page-description,.eyebrow,.settings-section-desc,.setting-help,.shortcut-hint,.empty-state p{display:none!important}
+#statsRangeLabel,.stat-foot{display:none}
+@media(max-width:800px){.nav-btn{min-width:38px}}
+@media(max-width:560px){
+  .brand{min-width:0;gap:8px}.brand-name{font-size:13px}
+  .header-actions{gap:2px}.header-actions .icon-btn,.language-btn{width:34px;height:34px;flex-basis:34px}
+  #soundQuick,#fullscreenBtn{display:none}
+  .nav-btn{min-width:31px;padding:8px 7px}
+  .timer-topline{gap:5px}.mode-btn{width:auto;min-width:0;flex:1 1 0;padding:8px 6px;font-size:9.5px}
+  .mode-switch{width:242px;flex:0 0 242px;min-width:0}.cycle-indicator{width:82px;min-width:82px;flex:0 0 82px;font-size:9px;gap:4px}
+}
+@media(max-width:380px){.brand-name{display:none}.brand{gap:0}.mode-switch{width:198px;flex-basis:198px}.cycle-indicator{width:68px;min-width:68px;flex-basis:68px}.mode-btn{padding:7px 4px;font-size:9px}}
+/* Fixed navigation geometry prevents label length from shifting controls between languages. */
+@media(min-width:881px){.nav-btn{width:115px;min-width:115px;flex:0 0 115px}}
+@media(max-width:880px){.nav-btn{width:38px;min-width:38px;flex:0 0 38px;padding:9px 10px}.nav-btn span{display:none}}
+@media(max-width:800px){.settings-tab{width:120px;min-width:120px;flex:0 0 120px}}
+@media(max-width:560px){.nav-btn{width:31px;min-width:31px;flex:0 0 31px;padding:8px 7px}.mobile-bottom button{flex:1 1 0;min-width:0;justify-content:center}}
+
+
+/* Viewport-first responsive layout: keep the application inside one screen. */
+html, body { width:100%; height:100%; min-height:0; overflow:hidden; }
+html { min-width:320px; }
+body { min-height:0; overscroll-behavior:none; }
+.app-shell { width:100%; height:100vh; height:100dvh; min-height:0; overflow:hidden; }
+.topbar {
+  position:relative; top:auto; z-index:30;
+  height:clamp(54px, 7.5vh, 68px); flex:0 0 clamp(54px, 7.5vh, 68px);
+  padding-inline:clamp(10px, 2.4vw, 34px);
+  background:var(--surface); border-bottom:1px solid var(--line-soft);
+  backdrop-filter:none;
+}
+main {
+  width:min(1500px,100%); height:auto; min-height:0; flex:1 1 auto;
+  margin:0 auto; padding:clamp(8px,1.5vh,16px) clamp(10px,2.4vw,34px);
+  overflow:hidden; display:flex; flex-direction:column;
+}
+.view { display:none; width:100%; min-width:0; min-height:0; }
+.view.active { display:flex; flex:1 1 auto; flex-direction:column; min-height:0; overflow:hidden; animation:none; }
+.page-heading { flex:0 0 auto; margin:0 0 clamp(8px,1.4vh,14px); align-items:center; min-height:34px; }
+.page-heading h1 { font-size:clamp(19px,2vw,25px); line-height:1.1; }
+.page-description,.eyebrow { display:none!important; }
+
+/* Timer */
+.timer-layout {
+  flex:1 1 auto; min-height:0; height:100%;
+  grid-template-columns:minmax(0,1fr) clamp(245px,24vw,300px);
+  gap:clamp(10px,1.4vw,16px); align-items:stretch;
+}
+.timer-main {
+  min-width:0; min-height:0; height:100%; padding:clamp(12px,2vh,24px) clamp(14px,2vw,28px);
+  border-radius:clamp(16px,1.8vw,22px);
+}
+.timer-topline { gap:8px; flex:0 0 auto; }
+.mode-switch { flex:0 1 262px; width:min(262px,calc(100% - 92px)); min-width:0; }
+.mode-btn { flex:1 1 0; width:auto; min-width:0; padding:8px 5px; font-size:clamp(9px,.8vw,11px); }
+.cycle-indicator { flex:0 0 84px; width:84px; min-width:0; justify-content:flex-end; font-size:10px; }
+.timer-center {
+  flex:1 1 auto; min-height:0; padding:clamp(7px,1.4vh,16px) 0;
+  justify-content:center;
+}
+.timer-ring-wrap {
+  width:min(410px, 54vh, 62vw); max-width:100%; flex:0 1 auto;
+}
+.ring-inner { inset:14%; }
+.time-display { font-size:clamp(52px, min(7.1vw, 10.8vh), 88px); letter-spacing:clamp(-5px,-.35vw,-2px); }
+.timer-mode-label { font-size:clamp(9px,.8vw,11px); margin-bottom:3px; }
+.timer-state-label { margin-top:7px; font-size:11px; }
+.session-context { margin-top:5px; font-size:11px; }
+.timer-controls { flex:0 0 auto; gap:9px; margin-top:0; }
+.control-main { min-width:clamp(128px,13vw,160px); height:clamp(42px,5.6vh,50px); }
+.control-secondary { width:clamp(39px,4.4vh,44px); height:clamp(39px,4.4vh,44px); }
+.timer-bottom { flex:0 0 auto; margin-top:clamp(8px,1.3vh,14px); padding-top:clamp(8px,1.2vh,13px); gap:8px; }
+.active-task-mini { min-width:0; gap:7px; }
+.task-mini-icon { width:27px; height:27px; }
+.task-mini-label { font-size:9px; }
+.task-mini-name { max-width:min(34vw,260px); font-size:11px; }
+.link-btn { white-space:nowrap; font-size:10px; }
+.side-stack { min-width:0; min-height:0; gap:clamp(8px,1.2vh,14px); }
+.side-card { min-width:0; padding:clamp(12px,1.6vw,18px); }
+.side-card-head { margin-bottom:10px; }
+.field-label { margin-bottom:5px; font-size:10px; }
+.field,select.field { min-height:37px; padding-block:7px; }
+.quick-add { margin-top:6px; padding:3px 0; }
+.metric-grid { gap:7px; }
+.metric { padding:9px 10px; }
+.metric-value { font-size:20px; }
+.metric-label { font-size:9px; }
+
+/* Tasks: fixed page frame; only the growing list may scroll internally. */
+#view-tasks .page-heading { margin-bottom:8px; }
+#view-tasks .page-heading h1 { font-size:clamp(19px,2vw,24px); }
+.task-toolbar { flex:0 0 auto; }
+.task-toolbar .btn { min-height:35px; padding:7px 11px; }
+#view-tasks > .metric-grid { flex:0 0 auto; margin:0 0 8px!important; max-width:460px; }
+#view-tasks > .metric-grid .metric { padding:7px 10px; }
+#view-tasks > .metric-grid .metric-value { font-size:18px; }
+.task-list { flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; align-content:start; gap:7px; padding:1px 2px 2px 0; scrollbar-width:thin; }
+.task-row { padding:clamp(8px,1.2vh,12px) clamp(10px,1.4vw,15px); gap:9px; border-radius:12px; }
+.task-name { font-size:12px; }
+.task-meta { margin-top:3px; gap:8px; font-size:9px; }
+.task-actions .icon-btn { width:30px; height:30px; }
+.empty-state { padding:clamp(18px,4vh,38px) 16px; }
+.empty-icon { margin-bottom:8px; }
+
+/* Statistics: compact metric row and two balanced panels. */
+#view-stats .page-heading { margin-bottom:8px; }
+.stats-grid { flex:0 0 auto; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:9px; }
+.stat-card { min-height:0; padding:clamp(9px,1.3vw,14px); }
+.stat-top { font-size:10px; gap:4px; }
+.stat-icon { width:25px; height:25px; flex:0 0 25px; }
+.stat-number { font-size:clamp(20px,2.3vw,27px); margin-top:7px; }
+.stats-panels { flex:1 1 auto; min-height:0; grid-template-columns:minmax(0,1.4fr) minmax(220px,.8fr); gap:9px; }
+.stats-panels > .panel { min-width:0; min-height:0; padding:clamp(10px,1.5vw,16px); overflow:hidden; }
+.panel-head { margin-bottom:8px; }
+.panel-head h2 { font-size:14px; }
+.panel-sub,.stats-note { display:none; }
+.chart-wrap { max-height:calc(100% - 32px); }
+.weekly-chart { max-height:100%; }
+.insight { padding:clamp(6px,1vh,10px) 0; font-size:10px; }
+.insight strong { font-size:11px; }
+
+/* Settings: fit each settings group to the viewport without page scrolling. */
+#view-settings .page-heading { margin-bottom:8px; }
+.settings-layout { flex:1 1 auto; min-height:0; align-items:stretch; grid-template-columns:clamp(150px,18vw,205px) minmax(0,1fr); gap:9px; }
+.settings-nav { position:static; min-height:0; padding:6px; }
+.settings-tab { padding:clamp(7px,1vh,10px) 9px; font-size:11px; gap:8px; }
+.settings-content { min-height:0; min-width:0; overflow:hidden; }
+.settings-panel { padding:clamp(10px,1.5vw,18px); }
+.settings-section-title { font-size:15px; margin-bottom:4px; }
+.settings-section-desc,.setting-help { display:none!important; }
+.setting-row { min-height:0; padding:clamp(8px,1.1vh,12px) 0; gap:10px; }
+.setting-name { font-size:11px; line-height:1.25; }
+.setting-control .field { min-height:32px; }
+.setting-control .field { width:76px; }
+.setting-control select.field { width:130px; }
+.setting-actions { margin-top:10px; gap:7px; }
+.setting-actions .btn { min-height:34px; padding:7px 10px; }
+.data-warning { margin-top:9px; padding:8px 10px; font-size:9px; line-height:1.35; }
+
+/* Compact header and controls */
+.brand { min-width:0; gap:9px; }
+.brand-mark { width:31px; height:31px; flex:0 0 31px; }
+.brand-name { font-size:14px; }
+.header-actions { min-width:0; gap:3px; }
+.header-actions .icon-btn,.language-btn { width:35px; height:35px; flex:0 0 35px; }
+.nav { gap:2px; padding:3px; }
+.nav-btn { width:clamp(38px,7vw,86px); min-width:0; flex:0 1 auto; justify-content:center; padding:8px 9px; }
+.nav-btn span { display:inline; font-size:11px; }
+.mobile-bottom { display:none; }
+
+/* Tablet portrait: timer plus two compact context cards. */
+@media (max-width:800px) {
+  .topbar { height:60px; flex-basis:60px; padding-inline:14px; }
+  main { padding:9px 12px; }
+  .timer-layout { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr) auto; gap:8px; }
+  .timer-main { padding:12px 18px; }
+  .timer-ring-wrap { width:min(410px,48vh,58vw); }
+  .side-stack { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .side-card { padding:10px 12px; }
+  .side-card-head { margin-bottom:7px; }
+  .side-card-title { font-size:11px; }
+  .field-label { display:none; }
+  .quick-add { margin-top:4px; }
+  .metric { padding:6px 8px; }
+  .metric-value { font-size:18px; }
+  .nav-btn { width:38px; min-width:38px; flex:0 0 38px; padding:8px; }
+  .nav-btn span { display:none; }
+  .settings-layout { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); }
+  .settings-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px; }
+  .settings-tab { justify-content:center; min-width:0; padding:8px 4px; }
+  .settings-tab span { display:inline; font-size:10px; white-space:nowrap; }
+  .settings-tab svg { display:none; }
+}
+
+/* Smartphone: prioritize the timer; keep global navigation in the bottom rail. */
+@media (max-width:560px) {
+  .topbar { height:54px; flex-basis:54px; padding-inline:10px; }
+  .brand { gap:7px; }
+  .brand-mark { width:29px; height:29px; flex-basis:29px; }
+  .brand-name { font-size:13px; }
+  .nav { gap:1px; padding:2px; }
+  .nav-btn { width:31px; min-width:31px; flex:0 0 31px; padding:7px; }
+  .header-actions { gap:1px; }
+  .header-actions .icon-btn,.language-btn { width:32px; height:32px; flex-basis:32px; }
+  #soundQuick,#fullscreenBtn { display:none; }
+  main { padding:7px 9px; }
+  .mobile-bottom {
+    position:relative; inset:auto; z-index:30; display:flex; flex:0 0 auto;
+    height:56px; justify-content:space-around; align-items:center;
+    padding:4px 8px calc(4px + env(safe-area-inset-bottom));
+    background:var(--surface); border-top:1px solid var(--line); backdrop-filter:none;
+  }
+  .mobile-bottom button { flex:1 1 0; min-width:0; height:100%; padding:3px 2px; justify-content:center; gap:2px; font-size:9px; color:var(--muted); }
+  .mobile-bottom button.active { color:var(--text); }
+  .mobile-bottom svg { width:17px; height:17px; }
+  #view-timer .timer-layout { display:flex; }
+  #view-timer .timer-main { width:100%; padding:10px 10px 9px; border-radius:16px; }
+  #view-timer .side-stack { display:none; }
+  .timer-topline { gap:5px; }
+  .mode-switch { width:clamp(198px,64vw,242px); flex:0 1 clamp(198px,64vw,242px); padding:3px; gap:2px; }
+  .mode-btn { min-width:0; padding:7px 3px; font-size:clamp(9px,2.5vw,10px); }
+  .cycle-indicator { width:clamp(65px,22vw,82px); flex:0 0 clamp(65px,22vw,82px); gap:3px; font-size:9px; }
+  .cycle-dots { gap:3px; }
+  .cycle-dot { width:5px; height:5px; }
+  .timer-center { padding:5px 0; }
+  .timer-ring-wrap { width:min(68vw,38vh,300px); }
+  .time-display { font-size:clamp(48px,15.5vw,70px); letter-spacing:-3px; }
+  .timer-mode-label { font-size:9px; letter-spacing:1.5px; }
+  .timer-state-label { font-size:10px; margin-top:6px; }
+  .session-context { font-size:10px; margin-top:3px; }
+  .timer-controls { gap:8px; }
+  .control-main { min-width:clamp(124px,39vw,150px); height:43px; font-size:12px; border-radius:13px; }
+  .control-secondary { width:39px; height:39px; border-radius:12px; }
+  .timer-bottom { margin-top:7px; padding-top:7px; gap:5px; }
+  .task-mini-icon { width:25px; height:25px; }
+  .task-mini-label { font-size:8px; }
+  .task-mini-name { max-width:clamp(100px,40vw,170px); font-size:10px; }
+  .link-btn { font-size:9px; padding:5px 0; }
+  .page-heading { min-height:30px; margin-bottom:7px; }
+  .page-heading h1 { font-size:19px; }
+  #view-tasks .task-toolbar .btn { min-height:32px; padding:6px 9px; font-size:10px; }
+  #view-tasks > .metric-grid { max-width:none; }
+  #view-tasks > .metric-grid .metric-label { font-size:8px; }
+  .task-row { grid-template-columns:19px minmax(0,1fr) auto; gap:7px; padding:8px 9px; }
+  .task-check { width:17px; height:17px; }
+  .task-name { font-size:11px; }
+  .task-meta { font-size:8px; }
+  .task-progress { width:54px; }
+  .task-actions .icon-btn { width:27px; height:27px; }
+  .stats-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:5px; margin-bottom:7px; }
+  .stat-card { padding:7px 6px; border-radius:11px; }
+  .stat-top { font-size:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stat-icon { display:none; }
+  .stat-number { font-size:clamp(17px,5vw,21px); margin-top:4px; }
+  .stats-panels { grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:6px; }
+  .stats-panels > .panel { padding:8px; border-radius:12px; }
+  .panel-head h2 { font-size:11px; }
+  .panel-head .subtle-label { display:none; }
+  .insight { gap:5px; font-size:8px; padding:6px 0; }
+  .insight strong { font-size:9px; }
+  .settings-layout { gap:6px; }
+  .settings-nav { padding:4px; gap:2px; }
+  .settings-tab { padding:7px 2px; }
+  .settings-tab span { display:none; }
+  .settings-tab svg { display:block; width:16px; height:16px; }
+  .settings-panel { padding:10px; }
+  .settings-section-title { font-size:13px; }
+  .setting-row { padding:7px 0; gap:6px; }
+  .setting-name { font-size:10px; }
+  .setting-control .field { width:64px; min-height:29px; padding:5px 6px; font-size:10px; }
+  .setting-control select.field { width:110px; }
+  .setting-control .btn { min-height:29px; padding:5px 7px; font-size:9px; }
+  .toggle { width:36px; height:21px; }
+  .toggle:before { width:13px; height:13px; top:3px; left:3px; }
+  .toggle:checked:before { left:18px; }
+  .range-control input { width:70px; }
+  .setting-actions .btn { font-size:9px; }
+  .data-warning { display:none; }
+  .toast-region { right:9px; bottom:64px; }
+}
+
+/* Very small phones and short landscape displays. */
+@media (max-width:360px) {
+  .brand-name { display:none; }
+  .brand { gap:0; }
+  .mode-switch { width:clamp(184px,62vw,205px); flex-basis:clamp(184px,62vw,205px); }
+  .cycle-indicator { width:56px; flex-basis:56px; }
+  #cycleText { display:none; }
+  .timer-topline { gap:4px; }
+  .task-mini-label { display:none; }
+  .task-mini-name { max-width:112px; }
+  .stats-panels { grid-template-columns:minmax(0,1fr) minmax(0,.9fr); }
+}
+@media (max-height:620px) and (max-width:560px) {
+  .topbar { height:46px; flex-basis:46px; }
+  .mobile-bottom { height:46px; }
+  main { padding-block:4px; }
+  #view-timer .timer-main { padding:6px 9px; }
+  .timer-ring-wrap { width:min(52vw,39vh,220px); }
+  .timer-center { padding:1px 0; }
+  .session-context { display:none; }
+  .timer-bottom { margin-top:4px; padding-top:4px; }
+  .control-main { height:37px; }
+  .control-secondary { width:34px; height:34px; }
+  .time-display { font-size:clamp(42px,12vw,57px); }
+}
+@media (orientation:landscape) and (max-height:540px) and (max-width:950px) {
+  .topbar { height:44px; flex-basis:44px; }
+  .mobile-bottom { height:42px; }
+  main { padding:3px 8px; }
+  #view-timer .timer-main { padding:5px 10px; }
+  #view-timer .side-stack { display:none; }
+  .timer-ring-wrap { width:min(34vh,30vw,190px); }
+  .timer-center { padding:0; }
+  .session-context { display:none; }
+  .timer-state-label { margin-top:3px; }
+  .timer-bottom { margin-top:3px; padding-top:3px; }
+  .control-main { height:34px; }
+  .control-secondary { width:32px; height:32px; }
+  .time-display { font-size:clamp(38px,8vh,54px); }
+}
+@media (min-width:801px) and (max-height:700px) {
+  .topbar { height:54px; flex-basis:54px; }
+  main { padding-block:7px; }
+  .timer-ring-wrap { width:min(390px,48vh,58vw); }
+  .timer-main { padding-block:10px; }
+  .timer-center { padding-block:4px; }
+  .timer-bottom { margin-top:6px; padding-top:7px; }
+  .side-card { padding:10px 12px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .view.active { animation:none; }
+}
+
+
+
+/* Final fit refinements */
+@media (max-width:560px) {
+  .topbar > .nav { display:none; }
+  .mobile-bottom { height:calc(56px + env(safe-area-inset-bottom)); flex-basis:calc(56px + env(safe-area-inset-bottom)); }
+}
+@media (max-height:620px) and (max-width:950px) {
+  #view-settings .settings-layout { grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); }
+  #view-settings .settings-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:3px; padding:3px; }
+  #view-settings .settings-tab { justify-content:center; padding:5px 2px; }
+  #view-settings .settings-tab span { display:none; }
+  #view-settings .settings-tab svg { display:block; width:15px; height:15px; }
+  #view-settings .settings-panel { padding:6px 9px; }
+  #view-settings .settings-section-title { font-size:12px; margin-bottom:2px; }
+  #view-settings .setting-row { padding:4px 0; }
+  #view-settings .setting-name { font-size:10px; }
+  #view-settings .setting-control .field { min-height:26px; }
+  #view-settings .setting-actions { margin-top:4px; }
+  #view-settings .setting-actions .btn { min-height:27px; padding:4px 7px; font-size:9px; }
+  #view-settings .data-warning { display:none; }
+}
+@media (max-width:560px) and (max-height:620px) {
+  .mobile-bottom { height:calc(46px + env(safe-area-inset-bottom)); flex-basis:calc(46px + env(safe-area-inset-bottom)); }
+}
+
+
+@media (orientation:landscape) and (max-height:540px) and (max-width:950px) {
+  #view-timer .timer-layout { grid-template-columns:minmax(0,1fr); }
+  #view-timer .timer-ring-wrap { width:min(44vh,30vw,240px); }
+}
+
+
+
+/* App identity and dedicated, distraction-free fullscreen focus view. */
+.fullscreen-theme-toggle{display:none;flex:0 0 42px;width:42px;height:42px;border:1px solid var(--line);background:var(--surface-2);color:var(--text)}
+.fullscreen-theme-toggle svg{width:19px;height:19px}
+.fullscreen-task-picker{display:none}
+.fullscreen-task-label{flex:0 0 auto;color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}
+.fullscreen-task-picker .field{min-width:0;flex:1 1 auto;min-height:44px;font-size:13px}
+
+:root.app-fullscreen,
+:root.app-fullscreen body{width:100%;height:100%;min-height:0;overflow:hidden;background:var(--bg)}
+:root.app-fullscreen .app-shell{width:100%;height:100%;height:100dvh;min-height:0;overflow:hidden;background:var(--bg)}
+:root.app-fullscreen .topbar,
+:root.app-fullscreen .mobile-bottom{display:none!important}
+:root.app-fullscreen main{width:100%;max-width:none;height:100%;min-height:0;flex:1 1 auto;margin:0;padding:0;overflow:hidden}
+:root.app-fullscreen #view-timer{display:flex!important;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden}
+:root.app-fullscreen #view-timer .timer-layout{display:flex;width:100%;height:100%;min-width:0;min-height:0;flex:1 1 auto;overflow:hidden}
+:root.app-fullscreen #view-timer .timer-main{position:relative;width:100%;height:100%;min-height:0;min-width:0;flex:1 1 auto;padding:clamp(64px,10vh,94px) clamp(16px,4vw,48px) max(20px,env(safe-area-inset-bottom));border:0;border-radius:0;box-shadow:none;background:var(--bg);overflow:hidden;justify-content:stretch}
+:root.app-fullscreen #view-timer .timer-main:before{background:radial-gradient(ellipse at 50% 48%,color-mix(in srgb,var(--accent) 8%,transparent),transparent 58%)}
+:root.app-fullscreen #view-timer .side-stack,
+:root.app-fullscreen #view-timer .cycle-indicator,
+:root.app-fullscreen #view-timer .timer-bottom,
+:root.app-fullscreen #view-timer .timer-mode-label,
+:root.app-fullscreen #view-timer .timer-state-label,
+:root.app-fullscreen #view-timer .session-context{display:none!important}
+:root.app-fullscreen #view-timer .timer-topline{position:absolute;z-index:5;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 32px));display:flex;justify-content:center;align-items:center;gap:12px}
+:root.app-fullscreen #view-timer .mode-switch{width:min(440px,calc(100% - 56px));max-width:440px;min-width:0;flex:1 1 auto;gap:4px;padding:4px;border-radius:15px}
+:root.app-fullscreen #view-timer .mode-btn{min-width:0;min-height:42px;flex:1 1 0;padding:8px 9px;font-size:clamp(10px,1.1vw,13px);white-space:nowrap}
+:root.app-fullscreen #view-timer .fullscreen-theme-toggle{display:grid;place-items:center}
+:root.app-fullscreen #view-timer .timer-center{position:relative;z-index:1;width:100%;min-height:0;flex:1 1 auto;padding:0;justify-content:center}
+:root.app-fullscreen #view-timer .timer-ring-wrap{width:min(72vw,58vh,560px);max-width:min(560px,86vw);flex:0 1 auto}
+:root.app-fullscreen #view-timer .ring-inner{inset:14%}
+:root.app-fullscreen #view-timer .time-display{font-size:clamp(54px,min(9vw,13vh),112px);line-height:1;letter-spacing:clamp(-6px,-.5vw,-2px)}
+:root.app-fullscreen #view-timer .fullscreen-task-picker{position:relative;z-index:2;display:flex;align-items:center;gap:12px;width:min(420px,100%);flex:0 0 auto;margin:clamp(8px,1.7vh,18px) auto 0}
+:root.app-fullscreen #view-timer .timer-controls{position:relative;z-index:2;flex:0 0 auto;gap:12px;margin:clamp(12px,2.2vh,22px) 0 0}
+:root.app-fullscreen #view-timer .control-main{min-width:clamp(142px,17vw,190px);height:50px;font-size:14px}
+:root.app-fullscreen #view-timer .control-secondary{width:46px;height:46px}
+:root.app-fullscreen .toast-region{display:none!important}
+:root.app-fullscreen #modalBackdrop{display:none!important}
+
+@media(max-width:560px){
+  /* Keep the fullscreen entry point reachable on touch devices. */
+  #fullscreenBtn{display:grid!important}
+  :root.app-fullscreen #view-timer .timer-main{padding-top:max(66px,calc(env(safe-area-inset-top) + 62px));padding-inline:14px}
+  :root.app-fullscreen #view-timer .timer-topline{width:calc(100% - 24px);gap:7px}
+  :root.app-fullscreen #view-timer .mode-switch{width:auto;flex:1 1 auto;gap:2px;padding:3px}
+  :root.app-fullscreen #view-timer .mode-btn{min-height:39px;padding:7px 3px;font-size:clamp(9px,2.7vw,11px)}
+  :root.app-fullscreen #view-timer .fullscreen-theme-toggle{width:38px;height:38px;flex-basis:38px}
+  :root.app-fullscreen #view-timer .timer-ring-wrap{width:min(72vw,42vh,340px);max-width:84vw}
+  :root.app-fullscreen #view-timer .time-display{font-size:clamp(48px,min(13vw,9vh),76px);letter-spacing:-3px}
+  :root.app-fullscreen #view-timer .fullscreen-task-picker{width:min(420px,100%);gap:8px;margin-top:10px}
+  :root.app-fullscreen #view-timer .fullscreen-task-label{font-size:11px}
+  :root.app-fullscreen #view-timer .fullscreen-task-picker .field{min-height:42px;font-size:12px}
+  :root.app-fullscreen #view-timer .timer-controls{gap:9px;margin-top:12px}
+  :root.app-fullscreen #view-timer .control-main{min-width:clamp(126px,42vw,158px);height:46px;font-size:13px}
+  :root.app-fullscreen #view-timer .control-secondary{width:42px;height:42px}
+}
+@media(max-width:360px){
+  :root.app-fullscreen #view-timer .fullscreen-task-label{display:none}
+  :root.app-fullscreen #view-timer .fullscreen-task-picker{width:min(320px,100%)}
+  :root.app-fullscreen #view-timer .timer-ring-wrap{width:min(68vw,38vh,280px)}
+  :root.app-fullscreen #view-timer .control-main{min-width:122px}
+}
+@media(orientation:landscape) and (max-height:520px){
+  :root.app-fullscreen #view-timer .timer-main{padding-top:58px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  :root.app-fullscreen #view-timer .timer-topline{top:max(7px,env(safe-area-inset-top))}
+  :root.app-fullscreen #view-timer .mode-btn{min-height:34px;padding-block:5px}
+  :root.app-fullscreen #view-timer .timer-ring-wrap{width:min(52vh,38vw,260px)}
+  :root.app-fullscreen #view-timer .fullscreen-task-picker{margin-top:4px}
+  :root.app-fullscreen #view-timer .fullscreen-task-picker .field{min-height:34px}
+  :root.app-fullscreen #view-timer .timer-controls{margin-top:6px}
+  :root.app-fullscreen #view-timer .control-main{height:38px}
+  :root.app-fullscreen #view-timer .control-secondary{width:36px;height:36px}
+}
+
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand" aria-label="Pomodoro">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="19" height="19"><path d="M9 3h6M12 3v3M19.1 8.2l1.2-1.2M12 7a8 8 0 1 0 8 8 8 8 0 0 0-8-8Z"/><path d="M12 11v4l2.5 1.5"/></svg></div>
+      <div><div class="brand-name">Pomodoro</div><div class="brand-caption">Focus with intention</div></div>
+    </div>
+    <nav class="nav" aria-label="Điều hướng chính">
+      <button class="nav-btn active" data-view="timer" aria-current="page" title="Bộ đếm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9 2h6M12 2v3"/></svg><span>Bộ đếm</span></button>
+      <button class="nav-btn" data-view="tasks" title="Công việc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9h8M8 13h8M8 17h5M9 2v4M15 2v4"/></svg><span>Công việc</span></button>
+      <button class="nav-btn" data-view="stats" title="Thống kê"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h17"/><rect x="7" y="11" width="3" height="5" rx=".7"/><rect x="13" y="7" width="3" height="9" rx=".7"/><rect x="19" y="3" width="2" height="13" rx=".7"/></svg><span>Thống kê</span></button>
+      <button class="nav-btn" data-view="settings" title="Cài đặt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.1 1.9-1.8 3.1-2.2-.4a8 8 0 0 1-1.5.9L14.4 23h-4.8l-.7-2.4a8 8 0 0 1-1.5-.9l-2.2.4-1.8-3.1 1.1-1.9a8 8 0 0 1 0-1.8l-1.1-1.9 1.8-3.1 2.2.4a8 8 0 0 1 1.5-.9L9.6 2h4.8l.7 2.4a8 8 0 0 1 1.5.9l2.2-.4 1.8 3.1-1.1 1.9a8 8 0 0 1 0 1.8Z" transform="translate(0 -1) scale(1 .98)"/></svg><span>Cài đặt</span></button>
+    </nav>
+    <div class="header-actions">
+      <div class="status-pill" id="storagePill" title="Trạng thái lưu dữ liệu"><span class="status-dot" id="storageDot"></span><span id="storageLabel">Đã lưu trên thiết bị</span></div>
+      <button class="icon-btn" id="soundQuick" aria-label="Bật hoặc tắt âm thanh" title="Âm thanh"><svg id="soundQuickIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4zM15 9a5 5 0 0 1 0 6M18 6a9 9 0 0 1 0 12"/></svg></button>
+      <button class="icon-btn" id="fullscreenBtn" aria-label="Toàn màn hình" title="Toàn màn hình (F)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+      <button class="icon-btn" id="themeToggle" aria-label="Chuyển sang giao diện tối" title="Chuyển giao diện sáng / tối"><svg id="themeToggleIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z"/></svg></button>
+      <button class="language-btn" id="languageToggle" aria-label="Chuyển ngôn ngữ" title="Chuyển sang tiếng Anh"><span id="languageLabel">VI</span></button>
+    </div>
+  </header>
+  <main>
+    <section class="view active" id="view-timer" aria-label="Bộ đếm Pomodoro">
+      <div class="timer-layout">
+        <section class="timer-main card" id="timerCard">
+          <div class="timer-topline">
+            <div class="mode-switch" role="group" aria-label="Chọn chế độ">
+              <button class="mode-btn active" data-mode="focus">Tập trung</button>
+              <button class="mode-btn" data-mode="short">Nghỉ ngắn</button>
+              <button class="mode-btn" data-mode="long">Nghỉ dài</button>
+            </div>
+            <div class="cycle-indicator" aria-label="Tiến trình chu kỳ"><span id="cycleText">Chu kỳ 1/4</span><div class="cycle-dots" id="cycleDots"><i class="cycle-dot"></i><i class="cycle-dot"></i><i class="cycle-dot"></i><i class="cycle-dot"></i></div></div>
+            <button class="icon-btn fullscreen-theme-toggle" id="fullscreenThemeToggle" aria-label="Chuyển sang giao diện tối" title="Chuyển sang giao diện tối"><svg id="fullscreenThemeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z"/></svg></button>
+          </div>
+          <div class="timer-center">
+            <div class="timer-ring-wrap">
+              <svg class="timer-ring" viewBox="0 0 220 220" role="img" aria-label="Tiến trình thời gian">
+                <circle class="ring-track" cx="110" cy="110" r="98" pathLength="100"/>
+                <circle class="ring-progress" id="ringProgress" cx="110" cy="110" r="98" pathLength="100"/>
+              </svg>
+              <div class="ring-inner">
+                <div class="timer-mode-label" id="timerModeLabel">FOCUS TIME</div>
+                <div class="time-display" id="timeDisplay" aria-live="off">25:00</div>
+                <div class="timer-state-label" id="timerStateLabel">Sẵn sàng bắt đầu</div>
+              </div>
+            </div>
+            <div class="session-context" id="sessionContext">Một phiên tập trung · 25 phút</div>
+          </div>
+          <div class="fullscreen-task-picker">
+            <label class="fullscreen-task-label" for="fullscreenTaskSelect">Công việc</label>
+            <select class="field" id="fullscreenTaskSelect" aria-label="Chọn công việc"><option value="">Không gắn công việc</option></select>
+          </div>
+          <div class="timer-controls">
+            <button class="btn primary control-main" id="startPauseBtn"><svg id="startPauseIcon" viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M8 5.8c0-.8.9-1.3 1.6-.9l9 6.2a1.1 1.1 0 0 1 0 1.8l-9 6.2c-.7.5-1.6 0-1.6-.9z"/></svg><span id="startPauseText">Bắt đầu</span></button>
+            <button class="btn control-secondary" id="resetBtn" aria-label="Đặt lại" title="Đặt lại (R)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8"/><path d="M3 3v5h5"/></svg></button>
+            <button class="btn control-secondary" id="skipBtn" aria-label="Bỏ qua phiên" title="Bỏ qua (N)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5v14l11-7zM19 5v14"/></svg></button>
+          </div>
+          <div class="timer-bottom">
+            <div class="active-task-mini"><div class="task-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><div class="task-mini-copy"><div class="task-mini-label">ĐANG TẬP TRUNG VÀO</div><div class="task-mini-name" id="activeTaskName">Chưa chọn công việc</div></div></div>
+            <button class="link-btn" id="manageTaskLink">Chọn công việc ↗</button>
+          </div>
+        </section>
+        <aside class="side-stack">
+          <section class="side-card card">
+            <div class="side-card-head"><div class="side-card-title">Công việc hiện tại</div><span class="subtle-label">TÙY CHỌN</span></div>
+            <label class="field-label" for="activeTaskSelect">Phiên tập trung sẽ được ghi nhận cho</label>
+            <select class="field" id="activeTaskSelect"><option value="">Không gắn công việc</option></select>
+            <button class="quick-add" id="quickAddTask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>Thêm công việc mới</button>
+          </section>
+          <section class="side-card card">
+            <div class="side-card-head"><div class="side-card-title">Hôm nay</div><span class="subtle-label" id="todayDateLabel"></span></div>
+            <div class="metric-grid">
+              <div class="metric"><div class="metric-value" id="todaySessions">0</div><div class="metric-label">Phiên tập trung</div></div>
+              <div class="metric"><div class="metric-value" id="todayFocusTime">0m</div><div class="metric-label">Thời gian tập trung</div></div>
+            </div>
+          </section>
+
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" id="view-tasks" aria-label="Quản lý công việc">
+      <div class="page-heading"><div><div class="eyebrow">WORKSPACE</div><h1>Công việc</h1><p class="page-description">Chia nhỏ mục tiêu và dành sự tập trung cho từng việc.</p></div><div class="task-toolbar"><button class="btn primary" id="addTaskBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Thêm công việc</button></div></div>
+      <div class="metric-grid" style="max-width:460px;margin-bottom:18px">
+        <div class="metric"><div class="metric-value" id="taskOpenCount">0</div><div class="metric-label">Đang thực hiện</div></div>
+        <div class="metric"><div class="metric-value" id="taskDoneCount">0</div><div class="metric-label">Đã hoàn thành</div></div>
+      </div>
+      <div class="task-list" id="taskList"></div>
+    </section>
+
+    <section class="view" id="view-stats" aria-label="Thống kê năng suất">
+      <div class="page-heading"><div><div class="eyebrow">YOUR PROGRESS</div><h1>Thống kê</h1><p class="page-description">Theo dõi thời gian tập trung từ những phiên đã hoàn thành.</p></div><span class="subtle-label" id="statsRangeLabel">DỮ LIỆU THỰC TẾ</span></div>
+      <div class="stats-grid">
+        <article class="stat-card card"><div class="stat-top"><span>Phiên tập trung</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9 2h6"/></svg></span></div><div class="stat-number" id="statTodaySessions">0</div><div class="stat-foot">Hôm nay</div></article>
+        <article class="stat-card card"><div class="stat-top"><span>Thời gian tập trung</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v9l6 3"/><circle cx="12" cy="12" r="9"/></svg></span></div><div class="stat-number" id="statTodayTime">0m</div><div class="stat-foot">Hôm nay</div></article>
+        <article class="stat-card card"><div class="stat-top"><span>Tổng phiên</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h17M7 14l4-4 3 2 6-7"/></svg></span></div><div class="stat-number" id="statTotalSessions">0</div><div class="stat-foot">Tất cả thời gian</div></article>
+        <article class="stat-card card"><div class="stat-top"><span>Tổng thời gian</span><span class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div><div class="stat-number" id="statTotalTime">0h</div><div class="stat-foot">Tất cả thời gian</div></article>
+      </div>
+      <div class="stats-panels">
+        <section class="panel card"><div class="panel-head"><div><h2>7 ngày gần nhất</h2><div class="panel-sub">Số phiên tập trung theo ngày</div></div><span class="subtle-label">7 DAYS</span></div><div class="chart-wrap" id="weeklyChart"></div><div class="stats-note" id="weeklySummary">Chưa có dữ liệu trong khoảng thời gian này.</div></section>
+        <section class="panel card"><div class="panel-head"><div><h2>Tổng quan</h2><div class="panel-sub">Dựa trên lịch sử đã lưu</div></div></div><div class="insight-list" id="insightList"></div></section>
+      </div>
+    </section>
+
+    <section class="view" id="view-settings" aria-label="Cài đặt ứng dụng">
+      <div class="page-heading"><div><div class="eyebrow">PREFERENCES</div><h1>Cài đặt</h1><p class="page-description">Điều chỉnh nhịp làm việc và cách ứng dụng hoạt động.</p></div></div>
+      <div class="settings-layout">
+        <nav class="settings-nav card" aria-label="Nhóm cài đặt">
+          <button class="settings-tab active" data-settings-tab="timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/></svg><span>Bộ đếm</span></button>
+          <button class="settings-tab" data-settings-tab="automation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h4l3-8 4 16 3-8h2"/></svg><span>Tự động hóa</span></button>
+          <button class="settings-tab" data-settings-tab="sound"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4zM15 9a5 5 0 0 1 0 6"/></svg><span>Âm thanh</span></button>
+          <button class="settings-tab" data-settings-tab="notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span>Thông báo</span></button>
+          <button class="settings-tab" data-settings-tab="general"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.1 1.9-1.8 3.1-2.2-.4a8 8 0 0 1-1.5.9L14.4 23h-4.8l-.7-2.4a8 8 0 0 1-1.5-.9l-2.2.4-1.8-3.1 1.1-1.9a8 8 0 0 1 0-1.8l-1.1-1.9 1.8-3.1 2.2.4a8 8 0 0 1 1.5-.9L9.6 2h4.8l.7 2.4a8 8 0 0 1 1.5.9l2.2-.4 1.8 3.1-1.1 1.9a8 8 0 0 1 0 1.8Z" transform="translate(0 -1) scale(1 .98)"/></svg><span>Chung & dữ liệu</span></button>
+        </nav>
+        <div class="settings-content card">
+          <section class="settings-panel active" data-settings-panel="timer">
+            <h2 class="settings-section-title">Thời lượng phiên</h2><p class="settings-section-desc">Thay đổi thời gian cho những phiên tiếp theo. Phiên đang chạy không bị thay đổi.</p>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Tập trung</div><div class="setting-help">Thời gian dành cho công việc sâu.</div></div><div class="setting-control"><input class="field duration-input" id="focusMinutes" type="number" min="1" max="180" step="1" aria-label="Thời lượng tập trung"><span class="subtle-label">PHÚT</span></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Nghỉ ngắn</div><div class="setting-help">Khoảng nghỉ giữa các phiên tập trung.</div></div><div class="setting-control"><input class="field duration-input" id="shortMinutes" type="number" min="1" max="60" step="1" aria-label="Thời lượng nghỉ ngắn"><span class="subtle-label">PHÚT</span></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Nghỉ dài</div><div class="setting-help">Khoảng nghỉ sau một chu kỳ tập trung.</div></div><div class="setting-control"><input class="field duration-input" id="longMinutes" type="number" min="1" max="90" step="1" aria-label="Thời lượng nghỉ dài"><span class="subtle-label">PHÚT</span></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Phiên tập trung mỗi chu kỳ</div><div class="setting-help">Sau số phiên này, ứng dụng sẽ đề xuất nghỉ dài.</div></div><div class="setting-control"><input class="field duration-input" id="longInterval" type="number" min="2" max="8" step="1" aria-label="Số phiên mỗi chu kỳ"><span class="subtle-label">PHIÊN</span></div></div>
+            <div class="setting-actions"><button class="btn primary" id="saveTimerSettings">Lưu thay đổi</button><button class="btn ghost" id="resetTimerSettings">Khôi phục mặc định</button></div>
+          </section>
+          <section class="settings-panel" data-settings-panel="automation">
+            <h2 class="settings-section-title">Tự động hóa</h2><p class="settings-section-desc">Giữ quyền chủ động trong mỗi lần chuyển phiên.</p>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Tự chuyển sang phiên tiếp theo</div><div class="setting-help">Khi tắt, ứng dụng sẽ chờ bạn xác nhận sau khi bộ đếm kết thúc.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="autoTransition"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Tự bắt đầu phiên tập trung</div><div class="setting-help">Tự chạy phiên tập trung mới sau khi kết thúc thời gian nghỉ.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="autoStartFocus"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Tự bắt đầu nghỉ ngắn</div><div class="setting-help">Tự chạy nghỉ ngắn ngay sau phiên tập trung.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="autoStartShort"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Tự bắt đầu nghỉ dài</div><div class="setting-help">Tự chạy nghỉ dài khi hoàn thành chu kỳ.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="autoStartLong"></div></div>
+          </section>
+          <section class="settings-panel" data-settings-panel="sound">
+            <h2 class="settings-section-title">Âm thanh</h2><p class="settings-section-desc">Âm thanh được tạo trực tiếp bằng Web Audio API, không cần tệp âm thanh bên ngoài.</p>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Âm thanh hoàn tất</div><div class="setting-help">Phát tín hiệu khi một phiên kết thúc.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="soundEnabled"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Kiểu âm thanh</div><div class="setting-help">Chọn âm báo phù hợp với môi trường làm việc.</div></div><div class="setting-control"><select class="field" id="soundType"><option value="beep">Digital Beep</option><option value="bell">Soft Bell</option><option value="alarm">Classic Alarm</option><option value="chime">Gentle Chime</option></select></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Âm lượng</div><div class="setting-help">Mức âm lượng tổng.</div></div><div class="setting-control range-control"><input type="range" id="soundVolume" min="0" max="100" value="55"><span class="range-value" id="volumeValue">55%</span></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Âm báo khi bắt đầu</div><div class="setting-help">Phát tín hiệu ngắn lúc bắt đầu hoặc tiếp tục phiên.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="startSound"></div></div>
+            <div class="setting-actions"><button class="btn" id="previewSound">Nghe thử âm thanh</button></div>
+          </section>
+          <section class="settings-panel" data-settings-panel="notifications">
+            <h2 class="settings-section-title">Thông báo</h2><p class="settings-section-desc">Thông báo của trình duyệt cần được cấp quyền sau thao tác chủ động của bạn.</p>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Thông báo trong ứng dụng</div><div class="setting-help">Hiển thị thông báo trực tiếp trong giao diện.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="inAppNotifications"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Thông báo trình duyệt</div><div class="setting-help" id="notificationHelp">Nhận thông báo hệ thống khi một phiên kết thúc, nếu trình duyệt hỗ trợ.</div></div><div class="setting-control"><button class="btn small" id="notificationPermissionBtn">Cấp quyền</button></div></div>
+          </section>
+          <section class="settings-panel" data-settings-panel="general">
+            <h2 class="settings-section-title">Chung & dữ liệu</h2><p class="settings-section-desc">Các tiện ích của trình duyệt và công cụ sao lưu dữ liệu cá nhân.</p>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Giữ màn hình luôn sáng</div><div class="setting-help">Dùng Screen Wake Lock nếu trình duyệt và thiết bị hỗ trợ. Không đảm bảo hoạt động trên mọi nền tảng.</div></div><div class="setting-control"><input class="toggle" type="checkbox" id="wakeLockEnabled"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Phím tắt</div><div class="setting-help">Điều khiển ứng dụng bằng bàn phím.</div></div><div class="setting-control"><button class="btn small" id="showShortcuts">Xem phím tắt</button></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Xuất dữ liệu</div><div class="setting-help">Tải xuống tệp JSON gồm cài đặt, công việc và lịch sử phiên.</div></div><div class="setting-control"><button class="btn small" id="exportDataBtn">Xuất JSON</button></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Nhập dữ liệu</div><div class="setting-help">Khôi phục từ bản sao lưu JSON. Dữ liệu hiện tại sẽ được thay thế sau khi xác nhận.</div></div><div class="setting-control"><button class="btn small" id="importDataBtn">Nhập JSON</button><input type="file" accept="application/json,.json" id="importFile" class="file-input-hidden"></div></div>
+            <div class="setting-row"><div class="setting-copy"><div class="setting-name">Xóa toàn bộ dữ liệu</div><div class="setting-help">Xóa công việc, lịch sử và đưa cài đặt về mặc định trên thiết bị này.</div></div><div class="setting-control"><button class="btn small danger" id="clearDataBtn">Xóa dữ liệu</button></div></div>
+            <div class="data-warning" id="storageWarning">Dữ liệu được lưu cục bộ trong trình duyệt trên thiết bị này. Hãy xuất bản sao lưu định kỳ; xóa dữ liệu trình duyệt có thể làm mất lịch sử.</div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+  <nav class="mobile-bottom" aria-label="Điều hướng nhanh">
+    <button data-view="timer" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5"/></svg>Bộ đếm</button>
+    <button data-view="tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9h8M8 13h8"/></svg>Công việc</button>
+    <button data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h17"/><path d="M8 15v-4m5 4V7m5 8V4"/></svg>Thống kê</button>
+    <button data-view="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 13.5 21 15l-2 4-2.5-.5-1.5 1L14 22h-4l-1-2.5-1.5-1L5 19l-2-4 2-1.5v-2L3 10l2-4 2.5.5 1.5-1L10 3h4l1 2.5 1.5 1L19 6l2 4-2 1.5z"/></svg>Cài đặt</button>
+  </nav>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="presentation">
+  <section class="modal" id="modalContent" role="dialog" aria-modal="true" aria-labelledby="modalTitle"></section>
+</div>
+<div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+(() => {
+'use strict';
+
+const STORAGE_KEY = 'pomodoro_standalone_v1';
+const SCHEMA_VERSION = 1;
+const DEFAULT_SETTINGS = {
+  durations: { focus: 25, short: 5, long: 15 },
+  longInterval: 4,
+  autoTransition: true,
+  autoStartFocus: false,
+  autoStartShort: false,
+  autoStartLong: false,
+  soundEnabled: true,
+  soundType: 'bell',
+  soundVolume: 55,
+  startSound: false,
+  browserNotifications: false,
+  inAppNotifications: true,
+  wakeLockEnabled: false
+};
+const MODE_META = {
+  focus: { label: 'Tập trung', shortLabel: 'FOCUS TIME', color: '#f5a623' },
+  short: { label: 'Nghỉ ngắn', shortLabel: 'SHORT BREAK', color: '#34d399' },
+  long: { label: 'Nghỉ dài', shortLabel: 'LONG BREAK', color: '#60a5fa' }
+};
+const $ = (id) => document.getElementById(id);
+const now = () => Date.now();
+const uid = () => (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `id-${now()}-${Math.random().toString(36).slice(2,10)}`;
+const clone = (obj) => JSON.parse(JSON.stringify(obj));
+const localDateKey = (date = new Date()) => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+const formatClock = (seconds) => {
+  const safe = Math.max(0, Math.ceil(Number.isFinite(seconds) ? seconds : 0));
+  return `${String(Math.floor(safe/60)).padStart(2,'0')}:${String(safe%60).padStart(2,'0')}`;
+};
+const formatDuration = (seconds, compact = false) => {
+  const mins = Math.max(0, Math.round(seconds / 60));
+  const hours = Math.floor(mins / 60), rem = mins % 60;
+  if (hours && rem) return compact ? `${hours}h ${rem}m` : (uiPrefs.lang==='en' ? `${hours} hr ${rem} min` : `${hours} giờ ${rem} phút`);
+  if (hours) return compact ? `${hours}h` : (uiPrefs.lang==='en' ? `${hours} hr` : `${hours} giờ`);
+  return compact ? `${rem}m` : (uiPrefs.lang==='en' ? `${rem} min` : `${rem} phút`);
+};
+const escapeHTML = (value) => String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+
+// Appearance and language preferences are stored separately from productivity data.
+const UI_PREFS_KEY = 'pomodoro_ui_preferences_v1';
+let uiPrefs = { theme: 'light', lang: 'vi' };
+const VI_EN = {
+  'Focus with intention':'Focus with intention',
+  'Bộ đếm':'Timer','Công việc':'Tasks','Thống kê':'Statistics','Cài đặt':'Settings',
+  'Đã lưu trên thiết bị':'Saved on this device','Lưu trữ không khả dụng':'Storage unavailable',
+  'Tập trung':'Focus','Nghỉ ngắn':'Short break','Nghỉ dài':'Long break',
+  'FOCUS TIME':'FOCUS','SHORT BREAK':'SHORT BREAK','LONG BREAK':'LONG BREAK',
+  'Sẵn sàng bắt đầu':'Ready when you are','Đang tập trung':'Focusing','Đang nghỉ':'On a break','Đã tạm dừng':'Paused','Đã hoàn tất':'Completed',
+  'Một phiên tập trung':'Focus session','Bắt đầu':'Start','Tạm dừng':'Pause','Tiếp tục':'Resume','Phiên tiếp theo':'Next session',
+  'Đặt lại':'Reset','Bỏ qua phiên':'Skip session','ĐANG TẬP TRUNG VÀO':'CURRENT TASK','Chưa chọn công việc':'No task selected',
+  'Chọn công việc ↗':'Choose task ↗','Công việc hiện tại':'Current task','TÙY CHỌN':'OPTIONAL',
+  'Phiên tập trung sẽ được ghi nhận cho':'Track focus sessions for','Không gắn công việc':'No task','Thêm công việc mới':'Add a task',
+  'Hôm nay':'Today','Phiên tập trung':'Focus sessions','Thời gian tập trung':'Focus time','Nhịp Pomodoro':'Pomodoro cycle','GỢI Ý':'TIP',
+  'Hoàn thành 4 phiên tập trung để đến kỳ nghỉ dài. Hãy bắt đầu với một việc quan trọng nhất.':'Complete four focus sessions to earn a long break. Start with one important task.',
+  'Phím tắt':'Keyboard shortcuts','bắt đầu / tạm dừng':'start / pause','đặt lại':'reset',
+  'WORKSPACE':'WORKSPACE','Chia nhỏ mục tiêu và dành sự tập trung cho từng việc.':'Break goals into manageable tasks and focus on one at a time.',
+  'Thêm công việc':'Add task','Đang thực hiện':'In progress','Đã hoàn thành':'Completed',
+  'YOUR PROGRESS':'YOUR PROGRESS','Theo dõi thời gian tập trung từ những phiên đã hoàn thành.':'Track focus time from completed sessions.',
+  'DỮ LIỆU THỰC TẾ':'RECORDED DATA','Tổng phiên':'Total sessions','Tất cả thời gian':'All time','Tổng thời gian':'Total time',
+  '7 ngày gần nhất':'Last 7 days','Số phiên tập trung theo ngày':'Focus sessions per day','7 DAYS':'7 DAYS',
+  'Chưa có dữ liệu trong khoảng thời gian này.':'No data for this period.','Tổng quan':'Overview','Dựa trên lịch sử đã lưu':'Based on saved history',
+  'PREFERENCES':'PREFERENCES','Điều chỉnh nhịp làm việc và cách ứng dụng hoạt động.':'Customize your work rhythm and app behavior.',
+  'Bộ đếm':'Timer','Tự động hóa':'Automation','Âm thanh':'Sound','Thông báo':'Notifications','Chung & dữ liệu':'General & data',
+  'Thời lượng phiên':'Session lengths','Thay đổi thời gian cho những phiên tiếp theo. Phiên đang chạy không bị thay đổi.':'Changes apply to upcoming sessions. The current timer will not change.',
+  'Thời gian dành cho công việc sâu.':'Time for focused work.','Khoảng nghỉ giữa các phiên tập trung.':'A short pause between focus sessions.','Khoảng nghỉ sau một chu kỳ tập trung.':'A longer pause after a focus cycle.',
+  'Phiên tập trung mỗi chu kỳ':'Focus sessions per cycle','Sau số phiên này, ứng dụng sẽ đề xuất nghỉ dài.':'A long break follows this many focus sessions.',
+  'PHÚT':'MIN','PHIÊN':'SESSIONS','Lưu thay đổi':'Save changes','Khôi phục mặc định':'Restore defaults',
+  'Giữ quyền chủ động trong mỗi lần chuyển phiên.':'Stay in control of each session transition.',
+  'Tự chuyển sang phiên tiếp theo':'Automatically switch to the next session','Khi tắt, ứng dụng sẽ chờ bạn xác nhận sau khi bộ đếm kết thúc.':'When off, the app waits for your confirmation when the timer ends.',
+  'Tự bắt đầu phiên tập trung':'Auto-start focus sessions','Tự chạy phiên tập trung mới sau khi kết thúc thời gian nghỉ.':'Start a new focus session automatically after a break.',
+  'Tự bắt đầu nghỉ ngắn':'Auto-start short breaks','Tự chạy nghỉ ngắn ngay sau phiên tập trung.':'Start a short break automatically after a focus session.',
+  'Tự bắt đầu nghỉ dài':'Auto-start long breaks','Tự chạy nghỉ dài khi hoàn thành chu kỳ.':'Start a long break automatically at the end of a cycle.',
+  'Âm thanh được tạo trực tiếp bằng Web Audio API, không cần tệp âm thanh bên ngoài.':'Sounds are generated with the Web Audio API. No external audio files are needed.',
+  'Âm thanh hoàn tất':'Completion sound','Phát tín hiệu khi một phiên kết thúc.':'Play a sound when a session ends.',
+  'Kiểu âm thanh':'Sound type','Chọn âm báo phù hợp với môi trường làm việc.':'Choose a sound that suits your work environment.',
+  'Âm lượng':'Volume','Mức âm lượng tổng.':'Overall sound level.','Âm báo khi bắt đầu':'Start sound','Phát tín hiệu ngắn lúc bắt đầu hoặc tiếp tục phiên.':'Play a brief tone when starting or resuming a session.',
+  'Nghe thử âm thanh':'Preview sound','Thông báo của trình duyệt cần được cấp quyền sau thao tác chủ động của bạn.':'Browser notifications require your permission.',
+  'Thông báo trong ứng dụng':'In-app notifications','Hiển thị thông báo trực tiếp trong giao diện.':'Show completion messages inside the app.',
+  'Thông báo trình duyệt':'Browser notifications','Nhận thông báo hệ thống khi một phiên kết thúc, nếu trình duyệt hỗ trợ.':'Receive a system notification when a session ends, if supported.',
+  'Cấp quyền':'Allow','Đã cấp quyền':'Permission granted','Đã bị chặn':'Blocked','Không hỗ trợ':'Not supported',
+  'Các tiện ích của trình duyệt và công cụ sao lưu dữ liệu cá nhân.':'Browser utilities and personal data backup tools.',
+  'Giữ màn hình luôn sáng':'Keep screen awake','Dùng Screen Wake Lock nếu trình duyệt và thiết bị hỗ trợ. Không đảm bảo hoạt động trên mọi nền tảng.':'Use Screen Wake Lock when supported. Availability varies by device and browser.',
+  'Điều khiển ứng dụng bằng bàn phím.':'Control the app with your keyboard.','Xem phím tắt':'View shortcuts',
+  'Xuất dữ liệu':'Export data','Tải xuống tệp JSON gồm cài đặt, công việc và lịch sử phiên.':'Download a JSON file containing settings, tasks and session history.',
+  'Xuất JSON':'Export JSON','Nhập dữ liệu':'Import data','Khôi phục từ bản sao lưu JSON. Dữ liệu hiện tại sẽ được thay thế sau khi xác nhận.':'Restore from a JSON backup. Current data will be replaced after confirmation.',
+  'Nhập JSON':'Import JSON','Xóa toàn bộ dữ liệu':'Clear all data','Xóa công việc, lịch sử và đưa cài đặt về mặc định trên thiết bị này.':'Delete tasks and history, and restore default settings on this device.',
+  'Xóa dữ liệu':'Clear data','Dữ liệu được lưu cục bộ trong trình duyệt trên thiết bị này. Hãy xuất bản sao lưu định kỳ; xóa dữ liệu trình duyệt có thể làm mất lịch sử.':'Data is stored locally in this browser. Export backups regularly; clearing browser data may erase your history.',
+  'Đang chọn':'Selected','Chỉnh sửa':'Edit','Xóa':'Delete','Hoàn thành':'Complete','Mở lại':'Reopen',
+  'Chọn công việc':'Select task','Không gắn công việc':'No task','Không hỗ trợ thông báo':'Notifications are not supported',
+  'Đóng':'Close','Thoát toàn màn hình':'Exit fullscreen','Toàn màn hình':'Fullscreen','Điều hướng chính':'Main navigation','Điều hướng nhanh':'Quick navigation','Chọn chế độ':'Choose mode','Tiến trình chu kỳ':'Cycle progress','Tiến trình thời gian':'Time progress','Bộ đếm Pomodoro':'Pomodoro timer','Quản lý công việc':'Task management','Thống kê năng suất':'Productivity statistics','Cài đặt ứng dụng':'App settings','Nhóm cài đặt':'Settings groups','Đóng':'Close','Trình duyệt này không hỗ trợ Notification API.':'This browser does not support the Notification API.',
+  'Quyền thông báo đang bị chặn trong cài đặt trình duyệt.':'Notification permission is blocked in your browser settings.',
+  'Đã cấp quyền thông báo cho trang này.':'Notification permission has been granted for this page.',
+  'Chỉ yêu cầu quyền sau khi bạn nhấn nút Cấp quyền.':'Permission is requested only after you select Allow.',
+  'Chưa có công việc nào':'No tasks yet','Tạo một công việc nhỏ, xác định mục tiêu và bắt đầu phiên tập trung đầu tiên.':'Create a task, set a goal and start your first focus session.',
+  'Tên công việc':'Task name','Mục tiêu phiên tập trung (không bắt buộc)':'Focus session goal (optional)',
+  'Ví dụ: Hoàn thiện báo cáo lâm sàng':'e.g. Finish the clinical report','Ví dụ: 4':'e.g. 4',
+  'Bạn có thể để trống nếu chưa muốn đặt mục tiêu.':'Leave this blank if you do not want to set a goal yet.',
+  'Hủy':'Cancel','Tạo công việc':'Create task','Lưu thay đổi':'Save changes','Công việc mới':'New task','Chỉnh sửa công việc':'Edit task',
+  'Ngày tập trung tốt nhất':'Most productive day','Kỷ lục thời gian/ngày':'Longest daily focus time','Thời lượng trung bình/phiên':'Average session length',
+  'Chuỗi ngày có tập trung':'Focus streak','Công việc hoàn thành':'Completed tasks','Chưa có dữ liệu':'No data',
+  'Đã lưu trên thiết bị':'Saved on this device','Lưu trữ không khả dụng':'Storage unavailable',
+  'Không thể đọc dữ liệu cũ. Ứng dụng đã mở với dữ liệu mới.':'Could not read previous data. The app started with a fresh workspace.',
+  'Dữ liệu lưu không hợp lệ':'Stored data is invalid','Dữ liệu đang được lưu cục bộ trong trình duyệt':'Data is being saved locally in this browser',
+  'Không thể lưu lâu dài. Dữ liệu có thể mất khi tải lại trang.':'Persistent storage is unavailable. Data may be lost after reloading.',
+  'Trình duyệt hiện không cho phép lưu dữ liệu cục bộ. Các thay đổi vẫn hoạt động trong phiên hiện tại nhưng có thể mất khi tải lại trang.':'This browser does not allow local storage. Changes work for this session but may be lost after reloading.',
+  'Đã chuyển sang nghỉ ngắn.':'Switched to short break.','Đã chuyển sang nghỉ dài.':'Switched to long break.','Đã chuyển sang tập trung.':'Switched to focus.',
+  'Đổi chế độ sẽ dừng và đặt lại phiên hiện tại. Bạn có muốn tiếp tục?':'Changing modes will stop and reset the current session. Continue?',
+  'Đã hoàn thành công việc.':'Task completed.','Đã mở lại công việc.':'Task reopened.','Đã chọn công việc.':'Task selected.',
+  'Đã xóa công việc. Lịch sử cũ được giữ lại.':'Task deleted. Previous session history was kept.','Đã cập nhật công việc.':'Task updated.','Đã thêm công việc.':'Task added.',
+  'Giá trị không hợp lệ. Kiểm tra giới hạn thời lượng và chu kỳ.':'Invalid values. Check the duration and cycle limits.',
+  'Đã lưu cài đặt bộ đếm.':'Timer settings saved.','Khôi phục thời lượng và chu kỳ về mặc định?':'Restore default durations and cycle settings?',
+  'Đã khôi phục cài đặt mặc định.':'Defaults restored.','Đã bật âm thanh.':'Sound enabled.','Đã tắt âm thanh.':'Sound disabled.',
+  'Trình duyệt không hỗ trợ Web Audio API.':'This browser does not support the Web Audio API.',
+  'Trình duyệt không hỗ trợ thông báo hệ thống.':'This browser does not support system notifications.',
+  'Đã cấp quyền thông báo.':'Notification permission granted.','Chưa cấp quyền thông báo.':'Notification permission not granted.',
+  'Không thể yêu cầu quyền thông báo.':'Could not request notification permission.',
+  'Không thể bật giữ màn hình sáng trên thiết bị này.':'Could not keep the screen awake on this device.',
+  'Không thể bật toàn màn hình trên trình duyệt này.':'Could not enter fullscreen in this browser.',
+  'Trình duyệt không hỗ trợ toàn màn hình.':'This browser does not support fullscreen.',
+  'Đã xuất bản sao lưu JSON.':'JSON backup exported.','Tệp JSON không đúng định dạng.':'The JSON file has an invalid format.',
+  'Phiên bản dữ liệu không tương thích.':'This data version is not compatible.','Danh sách công việc không hợp lệ.':'The task list is invalid.',
+  'Lịch sử phiên không hợp lệ.':'The session history is invalid.','Một số công việc trong tệp không hợp lệ.':'Some tasks in the file are invalid.',
+  'Không thể đọc tệp sao lưu.':'Could not read the backup file.','Đã nhập dữ liệu thành công.':'Data imported successfully.',
+  'Tệp sao lưu không hợp lệ.':'The backup file is invalid.','Đã xóa dữ liệu và khôi phục mặc định.':'Data cleared and defaults restored.',
+  'Phím tắt':'Keyboard shortcuts','Bắt đầu / Tạm dừng / Tiếp tục':'Start / Pause / Resume','Đặt lại bộ đếm':'Reset timer',
+  'Bỏ qua phiên hiện tại':'Skip current session','Bật / Tắt toàn màn hình':'Toggle fullscreen','Mở Cài đặt':'Open Settings',
+  'Đóng cửa sổ / Thoát toàn màn hình':'Close dialog / Exit fullscreen','Đã hiểu':'Got it','Để sau':'Later',
+  'Bạn đã hoàn thành một phiên tập trung':'You completed a focus session','Thời gian nghỉ đã kết thúc':'Break time is over',
+  'Làm tốt lắm. Một bước tiến nhỏ đã được ghi nhận.':'Well done. Another small step forward.','Hy vọng bạn đã được nạp lại năng lượng. Sẵn sàng quay lại công việc?':'Hope you feel recharged. Ready to get back to work?',
+  'phiên hôm nay':'sessions today','phiên trong chu kỳ':'sessions in this cycle','tiếp theo':'next',
+  'Đã đến lúc nghỉ ngắn.':'Time for a short break.','Đã đến lúc nghỉ dài.':'Time for a long break.','Đã đến lúc tập trung.':'Time to focus.',
+  'Bạn đã hoàn thành một phiên Pomodoro.':'You completed a Pomodoro session.',
+  'Dùng Screen Wake Lock nếu trình duyệt và thiết bị hỗ trợ. Không đảm bảo hoạt động trên mọi nền tảng.':'Uses Screen Wake Lock when available; support varies by device and browser.'
+};
+const EN_VI = Object.fromEntries(Object.entries(VI_EN).map(([vi,en]) => [en,vi]));
+function currentLocale(){ return uiPrefs.lang === 'en' ? 'en-US' : 'vi-VN'; }
+function translateText(value){
+  const source=String(value ?? ''), trimmed=source.trim();
+  if (!trimmed) return source;
+  let result=trimmed;
+  if (uiPrefs.lang === 'en') {
+    result=VI_EN[result] || result;
+    let m;
+    if ((m=result.match(/^Chu kỳ (\d+)\/(\d+)$/))) result=`Cycle ${m[1]}/${m[2]}`;
+    else if ((m=result.match(/^Một phiên tập trung · (\d+) phút$/))) result=`Focus session · ${m[1]} min`;
+    else if ((m=result.match(/^Nghỉ ngắn · (\d+) phút$/))) result=`Short break · ${m[1]} min`;
+    else if ((m=result.match(/^Nghỉ dài · (\d+) phút$/))) result=`Long break · ${m[1]} min`;
+    else if ((m=result.match(/^Hoàn thành (\d+) phiên tập trung nữa để đến kỳ nghỉ dài\. Hãy duy trì nhịp độ vừa sức\.$/))) result=`Complete ${m[1]} more focus sessions to reach a long break. Keep a steady pace.`;
+    else if (result==='Phiên tập trung kế tiếp sẽ khép lại chu kỳ. Sau đó, hãy dành thời gian cho một kỳ nghỉ dài.') result='The next focus session completes this cycle. Then take a long break.';
+    else if ((m=result.match(/^(\d+)\/(\d+) phiên$/))) result=`${m[1]}/${m[2]} sessions`;
+    else if ((m=result.match(/^(\d+) phiên$/))) result=`${m[1]} sessions`;
+    else if ((m=result.match(/^(\d+) phiên hôm nay$/))) result=`${m[1]} sessions today`;
+    else if ((m=result.match(/^(\d+) phiên trong chu kỳ$/))) result=`${m[1]} sessions in this cycle`;
+    else if ((m=result.match(/^(\d+) PHIÊN ĐÃ GHI NHẬN$/))) result=`${m[1]} SESSIONS RECORDED`;
+    else if ((m=result.match(/^Đã chuyển sang (.+)\.$/))) result=`Switched to ${VI_EN[m[1]] || m[1]}.`;
+    else if ((m=result.match(/^Nhập (\d+) công việc và (\d+) phiên lịch sử\? Dữ liệu hiện tại sẽ được thay thế\.$/))) result=`Import ${m[1]} tasks and ${m[2]} history sessions? Current data will be replaced.`;
+    else if ((m=result.match(/^Xóa công việc “(.+)”\? Lịch sử phiên tập trung đã ghi nhận sẽ được giữ nguyên\.$/))) result=`Delete task “${m[1]}”? Recorded focus-session history will be kept.`;
+    else if ((m=result.match(/^(\d+) phiên · (.+) trong 7 ngày gần nhất · Trung bình (.+) mỗi ngày\.$/))) result=`${m[1]} sessions · ${m[2]} in the last 7 days · Average ${m[3]} per day.`;
+    else if (result==='Chưa có dữ liệu trong khoảng thời gian này. Hoàn thành một phiên tập trung để bắt đầu theo dõi.') result='No data for this period. Complete a focus session to start tracking.';
+  } else {
+    result=EN_VI[result] || result;
+    let m;
+    if ((m=result.match(/^Cycle (\d+)\/(\d+)$/))) result=`Chu kỳ ${m[1]}/${m[2]}`;
+    else if ((m=result.match(/^Focus session · (\d+) min$/))) result=`Một phiên tập trung · ${m[1]} phút`;
+    else if ((m=result.match(/^Short break · (\d+) min$/))) result=`Nghỉ ngắn · ${m[1]} phút`;
+    else if ((m=result.match(/^Long break · (\d+) min$/))) result=`Nghỉ dài · ${m[1]} phút`;
+    else if ((m=result.match(/^Complete (\d+) more focus sessions to reach a long break\. Keep a steady pace\.$/))) result=`Hoàn thành ${m[1]} phiên tập trung nữa để đến kỳ nghỉ dài. Hãy duy trì nhịp độ vừa sức.`;
+    else if (result==='The next focus session completes this cycle. Then take a long break.') result='Phiên tập trung kế tiếp sẽ khép lại chu kỳ. Sau đó, hãy dành thời gian cho một kỳ nghỉ dài.';
+    else if ((m=result.match(/^([0-9]+)\/([0-9]+) sessions$/))) result=`${m[1]}/${m[2]} phiên`;
+    else if ((m=result.match(/^([0-9]+) sessions today$/))) result=`${m[1]} phiên hôm nay`;
+    else if ((m=result.match(/^([0-9]+) sessions in this cycle$/))) result=`${m[1]} phiên trong chu kỳ`;
+    else if ((m=result.match(/^([0-9]+) SESSIONS RECORDED$/))) result=`${m[1]} PHIÊN ĐÃ GHI NHẬN`;
+    else if ((m=result.match(/^(Focus|Short break|Long break) complete$/))) result=`${({'Focus':'Tập trung','Short break':'Nghỉ ngắn','Long break':'Nghỉ dài'})[m[1]]} đã hoàn tất`;
+    else if ((m=result.match(/^Time for (focus|a short break|a long break)\.$/))) result=`Đã đến lúc ${{'focus':'tập trung','a short break':'nghỉ ngắn','a long break':'nghỉ dài'}[m[1]]}.`;
+    else if ((m=result.match(/^(Start|Resume) · (Focus|Short break|Long break)$/))) result=`${m[1]==='Start'?'Bắt đầu':'Tiếp tục'} · ${{'Focus':'Tập trung','Short break':'Nghỉ ngắn','Long break':'Nghỉ dài'}[m[2]]}`;
+    else if ((m=result.match(/^([0-9]+) days$/))) result=`${m[1]} ngày`;
+    else if ((m=result.match(/^(.+): (\d+) sessions · (.+)$/))) result=`${m[1]}: ${m[2]} phiên · ${m[3]}`;
+    else if ((m=result.match(/^([0-9]+) sessions$/))) result=`${m[1]} phiên`;
+    else if ((m=result.match(/^Switched to (.+)\.$/))) result=`Đã chuyển sang ${EN_VI[m[1]] || m[1]}.`;
+    else if ((m=result.match(/^Import (\d+) tasks and (\d+) history sessions\? Current data will be replaced\.$/))) result=`Nhập ${m[1]} công việc và ${m[2]} phiên lịch sử? Dữ liệu hiện tại sẽ được thay thế.`;
+    else if ((m=result.match(/^Delete task “(.+)”? Recorded focus-session history will be kept\.$/))) result=`Xóa công việc “${m[1]}”? Lịch sử phiên tập trung đã ghi nhận sẽ được giữ nguyên.`;
+    else if ((m=result.match(/^([0-9]+) sessions · (.+) in the last 7 days · Average (.+) per day\.$/))) result=`${m[1]} phiên · ${m[2]} trong 7 ngày gần nhất · Trung bình ${m[3]} mỗi ngày.`;
+    else if (result==='No data for this period. Complete a focus session to start tracking.') result='Chưa có dữ liệu trong khoảng thời gian này. Hoàn thành một phiên tập trung để bắt đầu theo dõi.';
+  }
+  const lead=source.match(/^\s*/)?.[0] || '', tail=source.match(/\s*$/)?.[0] || '';
+  return lead+result+tail;
+}
+function applyLanguage(root=document.body){
+  if (!root) return;
+  document.documentElement.lang=uiPrefs.lang;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const nodes=[]; while(walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(node=>{ if(node.parentElement && !['SCRIPT','STYLE'].includes(node.parentElement.tagName)) node.nodeValue=translateText(node.nodeValue); });
+  root.querySelectorAll?.('*').forEach(el=>{
+    ['title','aria-label','placeholder','alt'].forEach(attr=>{
+      if(el.hasAttribute(attr)) el.setAttribute(attr,translateText(el.getAttribute(attr)));
+    });
+  });
+  const lang=$('languageLabel'); if(lang) lang.textContent=uiPrefs.lang.toUpperCase();
+  const languageTitle=uiPrefs.lang==='vi'?'Chuyển sang tiếng Anh':'Switch to Vietnamese';
+  $('languageToggle')?.setAttribute('title',languageTitle); $('languageToggle')?.setAttribute('aria-label',languageTitle);
+  applyTheme();
+}
+function applyTheme(){
+  document.documentElement.dataset.theme=uiPrefs.theme;
+  document.documentElement.style.colorScheme=uiPrefs.theme;
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.content=uiPrefs.theme==='light'?'#f5f6f8':'#000000';
+  const dark=uiPrefs.theme==='dark';
+  const iconMarkup=dark
+    ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
+    : '<path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z"/>';
+  ['themeToggleIcon','fullscreenThemeIcon'].forEach(id=>{const icon=$(id);if(icon)icon.innerHTML=iconMarkup;});
+  const label=uiPrefs.lang==='vi'?(dark?'Chuyển sang giao diện sáng':'Chuyển sang giao diện tối'):(dark?'Switch to light appearance':'Switch to dark appearance');
+  ['themeToggle','fullscreenThemeToggle'].forEach(id=>{$(id)?.setAttribute('aria-label',label);$(id)?.setAttribute('title',label);});
+}
+function saveUIPreferences(){
+  try{ localStorage.setItem(UI_PREFS_KEY,JSON.stringify(uiPrefs)); }catch(_){ /* UI preferences remain available for this tab. */ }
+}
+function loadUIPreferences(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(UI_PREFS_KEY)||'null');
+    if(raw && ['light','dark'].includes(raw.theme)) uiPrefs.theme=raw.theme;
+    if(raw && ['vi','en'].includes(raw.lang)) uiPrefs.lang=raw.lang;
+  }catch(_){ uiPrefs={theme:'light',lang:'vi'}; }
+  applyTheme();
+}
+function localizeConfirm(message){ return window.confirm(translateText(message)); }
+
+
+function createInitialState() {
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    settings: clone(DEFAULT_SETTINGS),
+    tasks: [],
+    history: [],
+    activeTaskId: null,
+    timer: {
+      mode: 'focus', status: 'idle', durationSeconds: DEFAULT_SETTINGS.durations.focus * 60,
+      remainingSeconds: DEFAULT_SETTINGS.durations.focus * 60, endAt: null, startAt: null,
+      runId: null, cyclePosition: 0, pendingMode: null, completedRunId: null
+    }
+  };
+}
+
+let state = createInitialState();
+let storageAvailable = true;
+let timerInterval = null;
+let runtimeAnchor = null;
+let audioContext = null;
+let wakeLock = null;
+let lastCompletionRunId = null;
+let modalPreviousFocus = null;
+let toastCounter = 0;
+
+function safeInt(value, fallback, min, max) {
+  const n = Number(value);
+  return Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
+}
+function normalizeSettings(raw = {}) {
+  const d = clone(DEFAULT_SETTINGS);
+  const durations = raw.durations || {};
+  return {
+    durations: {
+      focus: safeInt(durations.focus, d.durations.focus, 1, 180),
+      short: safeInt(durations.short, d.durations.short, 1, 60),
+      long: safeInt(durations.long, d.durations.long, 1, 90)
+    },
+    longInterval: safeInt(raw.longInterval, d.longInterval, 2, 8),
+    autoTransition: raw.autoTransition !== undefined ? !!raw.autoTransition : d.autoTransition,
+    autoStartFocus: !!raw.autoStartFocus,
+    autoStartShort: !!raw.autoStartShort,
+    autoStartLong: !!raw.autoStartLong,
+    soundEnabled: raw.soundEnabled !== undefined ? !!raw.soundEnabled : d.soundEnabled,
+    soundType: ['beep','bell','alarm','chime'].includes(raw.soundType) ? raw.soundType : d.soundType,
+    soundVolume: safeInt(raw.soundVolume, d.soundVolume, 0, 100),
+    startSound: !!raw.startSound,
+    browserNotifications: !!raw.browserNotifications,
+    inAppNotifications: raw.inAppNotifications !== undefined ? !!raw.inAppNotifications : true,
+    wakeLockEnabled: !!raw.wakeLockEnabled
+  };
+}
+function normalizeTask(task) {
+  if (!task || typeof task !== 'object') return null;
+  const name = String(task.name || '').trim().slice(0,160);
+  if (!name) return null;
+  return {
+    id: String(task.id || uid()), name,
+    createdAt: Number.isFinite(Number(task.createdAt)) ? Number(task.createdAt) : now(),
+    completed: !!task.completed,
+    targetSessions: task.targetSessions === null || task.targetSessions === '' || task.targetSessions === undefined ? null : safeInt(task.targetSessions, 1, 1, 999),
+    completedSessions: safeInt(task.completedSessions, 0, 0, 1000000),
+    completedAt: Number.isFinite(Number(task.completedAt)) ? Number(task.completedAt) : null
+  };
+}
+function normalizeHistory(record) {
+  if (!record || typeof record !== 'object') return null;
+  const mode = record.mode || 'focus';
+  if (mode !== 'focus') return null;
+  const completedAt = Number(record.completedAt);
+  if (!Number.isFinite(completedAt) || completedAt <= 0) return null;
+  return {
+    id: String(record.id || uid()), runId: String(record.runId || record.id || uid()), mode: 'focus',
+    durationSeconds: safeInt(record.durationSeconds, 1500, 1, 10800),
+    completedAt,
+    dateKey: typeof record.dateKey === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.dateKey) ? record.dateKey : localDateKey(new Date(completedAt)),
+    taskId: record.taskId ? String(record.taskId) : null,
+    taskName: record.taskName ? String(record.taskName).slice(0,160) : null
+  };
+}
+function normalizeState(raw) {
+  const fresh = createInitialState();
+  if (!raw || typeof raw !== 'object') return fresh;
+  fresh.settings = normalizeSettings(raw.settings || {});
+  const taskIds = new Set();
+  fresh.tasks = Array.isArray(raw.tasks) ? raw.tasks.map(normalizeTask).filter(Boolean).map(task => {
+    if (taskIds.has(task.id)) task.id = uid();
+    taskIds.add(task.id);
+    return task;
+  }).slice(0,10000) : [];
+  const historyIds = new Set();
+  fresh.history = Array.isArray(raw.history) ? raw.history.map(normalizeHistory).filter(Boolean).filter(rec => {
+    if (historyIds.has(rec.runId)) return false;
+    historyIds.add(rec.runId); return true;
+  }).slice(-50000) : [];
+  fresh.activeTaskId = raw.activeTaskId && fresh.tasks.some(t => t.id === String(raw.activeTaskId) && !t.completed) ? String(raw.activeTaskId) : null;
+  const t = raw.timer && typeof raw.timer === 'object' ? raw.timer : {};
+  const mode = ['focus','short','long'].includes(t.mode) ? t.mode : 'focus';
+  const validStatus = ['idle','running','paused','completed'].includes(t.status) ? t.status : 'idle';
+  const defaultSeconds = fresh.settings.durations[mode] * 60;
+  fresh.timer = {
+    mode, status: validStatus,
+    durationSeconds: safeInt(t.durationSeconds, defaultSeconds, 1, 10800),
+    remainingSeconds: safeInt(t.remainingSeconds, defaultSeconds, 0, 10800),
+    endAt: Number.isFinite(Number(t.endAt)) ? Number(t.endAt) : null,
+    startAt: Number.isFinite(Number(t.startAt)) ? Number(t.startAt) : null,
+    runId: t.runId ? String(t.runId) : null,
+    cyclePosition: safeInt(t.cyclePosition, 0, 0, fresh.settings.longInterval-1),
+    pendingMode: ['focus','short','long'].includes(t.pendingMode) ? t.pendingMode : null,
+    completedRunId: t.completedRunId ? String(t.completedRunId) : null
+  };
+  if (fresh.timer.status === 'running' && (!fresh.timer.endAt || !fresh.timer.runId)) {
+    fresh.timer.status = 'paused';
+    fresh.timer.remainingSeconds = Math.min(fresh.timer.durationSeconds, fresh.timer.remainingSeconds || fresh.timer.durationSeconds);
+    fresh.timer.endAt = null;
+  }
+  return fresh;
+}
+function persist() {
+  const payload = JSON.stringify({ schemaVersion: SCHEMA_VERSION, ...state });
+  try {
+    localStorage.setItem(STORAGE_KEY, payload);
+    if (!storageAvailable) { storageAvailable = true; updateStorageStatus(); }
+  } catch (error) {
+    storageAvailable = false;
+    updateStorageStatus();
+  }
+}
+function loadState() {
+  try {
+    const rawText = localStorage.getItem(STORAGE_KEY);
+    if (rawText) {
+      const parsed = JSON.parse(rawText);
+      if (!parsed || typeof parsed !== 'object') throw new Error('Dữ liệu lưu không hợp lệ');
+      state = normalizeState(parsed);
+    }
+  } catch (error) {
+    storageAvailable = false;
+    state = createInitialState();
+    toast('Không thể đọc dữ liệu cũ. Ứng dụng đã mở với dữ liệu mới.', 'error');
+  }
+  updateStorageStatus();
+}
+function updateStorageStatus() {
+  const dot = $('storageDot'), label = $('storageLabel');
+  if (!dot || !label) return;
+  dot.style.background = storageAvailable ? 'var(--success)' : 'var(--danger)';
+  label.textContent = storageAvailable ? 'Đã lưu trên thiết bị' : 'Lưu trữ không khả dụng';
+  $('storagePill').title = storageAvailable ? 'Dữ liệu đang được lưu cục bộ trong trình duyệt' : 'Không thể lưu lâu dài. Dữ liệu có thể mất khi tải lại trang.';
+  const warning = $('storageWarning');
+  if (warning && !storageAvailable) warning.textContent = 'Trình duyệt hiện không cho phép lưu dữ liệu cục bộ. Các thay đổi vẫn hoạt động trong phiên hiện tại nhưng có thể mất khi tải lại trang.';
+}
+
+function currentRemaining(forceWall = false) {
+  const t = state.timer;
+  if (t.status !== 'running') return Math.max(0, t.remainingSeconds);
+  let remaining;
+  if (!forceWall && runtimeAnchor && runtimeAnchor.runId === t.runId && typeof performance !== 'undefined') {
+    remaining = runtimeAnchor.remaining - (performance.now() - runtimeAnchor.perfAt) / 1000;
+  } else {
+    remaining = (t.endAt - now()) / 1000;
+  }
+  return Math.max(0, remaining);
+}
+function resetRuntimeAnchor(remaining) {
+  runtimeAnchor = state.timer.status === 'running' && typeof performance !== 'undefined'
+    ? { runId: state.timer.runId, remaining, perfAt: performance.now() } : null;
+}
+function setMode(mode, { preserveCycle = true, render = true } = {}) {
+  if (!MODE_META[mode]) return;
+  stopTimerLoop();
+  const cycle = preserveCycle ? state.timer.cyclePosition : 0;
+  const durationSeconds = state.settings.durations[mode] * 60;
+  state.timer = {
+    ...state.timer, mode, status: 'idle', durationSeconds, remainingSeconds: durationSeconds,
+    endAt: null, startAt: null, runId: null, cyclePosition: cycle, pendingMode: null
+  };
+  runtimeAnchor = null;
+  persist();
+  if (render) renderAll();
+}
+function startTimer({ isResume = false, silent = false } = {}) {
+  const t = state.timer;
+  if (t.status === 'running') return;
+  if (t.status === 'completed') {
+    advanceAfterCompletion(true);
+    return;
+  }
+  const remaining = Math.max(0, isResume ? t.remainingSeconds : currentRemaining());
+  if (remaining <= 0) { completeTimer(t.runId); return; }
+  // Create/resume audio while still inside the user's start gesture, so later alarms are not blocked by autoplay policy.
+  if (!silent && state.settings.soundEnabled) ensureAudioContext();
+  t.status = 'running';
+  t.remainingSeconds = remaining;
+  t.startAt = now();
+  t.endAt = now() + remaining * 1000;
+  t.runId = uid();
+  t.completedRunId = null;
+  t.pendingMode = null;
+  resetRuntimeAnchor(remaining);
+  persist();
+  if (!silent && state.settings.startSound && state.settings.soundEnabled) playSound('start');
+  startTimerLoop();
+  renderTimer();
+  updateDocumentTitle();
+  if (state.settings.wakeLockEnabled) requestWakeLock();
+}
+function pauseTimer() {
+  if (state.timer.status !== 'running') return;
+  const remaining = currentRemaining();
+  // If the deadline has already passed, complete the session before changing state.
+  if (remaining <= 0) { completeTimer(state.timer.runId); return; }
+  stopTimerLoop();
+  state.timer.status = 'paused';
+  state.timer.remainingSeconds = remaining;
+  state.timer.endAt = null;
+  state.timer.startAt = null;
+  runtimeAnchor = null;
+  persist();
+  renderTimer();
+  updateDocumentTitle();
+}
+function resetTimer() {
+  const t = state.timer;
+  stopTimerLoop();
+  t.status = 'idle'; t.durationSeconds = state.settings.durations[t.mode] * 60;
+  t.remainingSeconds = t.durationSeconds; t.endAt = null; t.startAt = null; t.runId = null; t.pendingMode = null;
+  runtimeAnchor = null;
+  persist(); renderAll(); updateDocumentTitle();
+}
+function stopTimerLoop() {
+  if (timerInterval !== null) { clearInterval(timerInterval); timerInterval = null; }
+}
+function startTimerLoop() {
+  stopTimerLoop();
+  timerInterval = window.setInterval(tickTimer, 250);
+  tickTimer();
+}
+function tickTimer() {
+  if (state.timer.status !== 'running') { stopTimerLoop(); return; }
+  const remaining = currentRemaining();
+  if (remaining <= 0) {
+    state.timer.remainingSeconds = 0;
+    completeTimer(state.timer.runId);
+    return;
+  }
+  $('timeDisplay').textContent = formatClock(remaining);
+  updateRing(remaining, state.timer.durationSeconds);
+  updateDocumentTitle(remaining);
+}
+function nextBreakMode() {
+  // The next focus block is not counted until it reaches zero.
+  return (state.timer.cyclePosition + 1) >= state.settings.longInterval ? 'long' : 'short';
+}
+function modeAutoStart(mode) {
+  return mode === 'focus' ? state.settings.autoStartFocus : mode === 'short' ? state.settings.autoStartShort : state.settings.autoStartLong;
+}
+function completeTimer(runId) {
+  const t = state.timer;
+  if (t.status !== 'running' || !runId || t.runId !== runId || t.completedRunId === runId || lastCompletionRunId === runId) return;
+  stopTimerLoop();
+  const completedMode = t.mode;
+  const completedAt = now();
+  let nextMode = 'focus';
+  if (completedMode === 'focus') {
+    const isLongBreak = (t.cyclePosition + 1) >= state.settings.longInterval;
+    nextMode = isLongBreak ? 'long' : 'short';
+    const alreadyRecorded = state.history.some(item => item.runId === runId);
+    if (!alreadyRecorded) {
+      const task = state.tasks.find(x => x.id === state.activeTaskId && !x.completed) || null;
+      state.history.push({ id: uid(), runId, mode: 'focus', durationSeconds: t.durationSeconds, completedAt, dateKey: localDateKey(new Date(completedAt)), taskId: task ? task.id : null, taskName: task ? task.name : null });
+      if (task) task.completedSessions = Math.min(1000000, task.completedSessions + 1);
+      if (state.history.length > 50000) state.history.splice(0, state.history.length - 50000);
+    }
+    t.cyclePosition = isLongBreak ? 0 : t.cyclePosition + 1;
+  }
+  t.status = 'completed'; t.remainingSeconds = 0; t.endAt = null; t.startAt = null;
+  t.completedRunId = runId;
+  t.pendingMode = nextMode;
+  runtimeAnchor = null; lastCompletionRunId = runId;
+  persist();
+  if (state.settings.soundEnabled) playSound('complete');
+  sendBrowserNotification(completedMode);
+  const transitioned = state.settings.autoTransition;
+  const shouldAutoStart = transitioned && modeAutoStart(nextMode);
+  if (transitioned) {
+    // Move to the next mode immediately; starting it remains independently configurable.
+    setMode(nextMode, { preserveCycle: true, render: false });
+    if (shouldAutoStart) startTimer({ silent: true });
+  }
+  renderAll();
+  updateDocumentTitle();
+  if (state.settings.inAppNotifications && !document.fullscreenElement) showCompletionModal(completedMode, nextMode, transitioned, shouldAutoStart);
+}
+function advanceAfterCompletion(startNow = false) {
+  const t = state.timer;
+  if (t.status !== 'completed') return;
+  const next = t.pendingMode || (t.mode === 'focus' ? nextBreakMode() : 'focus');
+  const shouldStart = startNow || modeAutoStart(next);
+  setMode(next, { preserveCycle: true, render: true });
+  closeModal();
+  if (shouldStart) startTimer({ silent: false });
+}
+function skipTimer() {
+  const t = state.timer;
+  if (t.status === 'completed') { advanceAfterCompletion(false); return; }
+  // A skipped focus block never counts toward the cycle; continue with a short break.
+  const next = t.mode === 'focus' ? 'short' : 'focus';
+  const shouldAutoStart = modeAutoStart(next);
+  setMode(next, { preserveCycle: true, render: true });
+  toast('Đã chuyển sang ' + MODE_META[next].label.toLowerCase() + '.');
+  if (shouldAutoStart) startTimer({ silent: true });
+}
+function manualModeChange(mode) {
+  if (mode === state.timer.mode) return;
+  if (state.timer.status === 'running' && !localizeConfirm('Đổi chế độ sẽ dừng và đặt lại phiên hiện tại. Bạn có muốn tiếp tục?')) return;
+  setMode(mode, { preserveCycle: true });
+  closeModal();
+}
+function reconcileTimerOnLoad() {
+  if (state.timer.status !== 'running') return;
+  const remaining = currentRemaining(true);
+  if (remaining <= 0) {
+    state.timer.remainingSeconds = 0;
+    const id = state.timer.runId;
+    // Mark the stale run as running so the single completion path can reconcile it.
+    completeTimer(id);
+  } else {
+    state.timer.remainingSeconds = remaining;
+    resetRuntimeAnchor(remaining);
+    startTimerLoop();
+  }
+}
+
+function updateRing(remaining, duration) {
+  const progress = duration > 0 ? Math.max(0, Math.min(1, remaining / duration)) : 0;
+  $('ringProgress').style.strokeDashoffset = String((1 - progress) * 100);
+}
+function renderTimer() {
+  const t = state.timer, meta = MODE_META[t.mode];
+  document.documentElement.style.setProperty('--accent', meta.color);
+  $('timerModeLabel').textContent = uiPrefs.lang === 'vi' ? ({focus:'TẬP TRUNG',short:'NGHỈ NGẮN',long:'NGHỈ DÀI'}[t.mode]) : ({focus:'FOCUS',short:'SHORT BREAK',long:'LONG BREAK'}[t.mode]);
+  const remaining = t.status === 'running' ? currentRemaining() : t.remainingSeconds;
+  $('timeDisplay').textContent = formatClock(remaining);
+  $('timerStateLabel').textContent = t.status === 'running' ? (t.mode === 'focus' ? 'Đang tập trung' : 'Đang nghỉ') : t.status === 'paused' ? 'Đã tạm dừng' : t.status === 'completed' ? 'Đã hoàn tất' : 'Sẵn sàng bắt đầu';
+  $('sessionContext').textContent = t.mode === 'focus' ? `Một phiên tập trung · ${Math.round(t.durationSeconds/60)} phút` : `${meta.label} · ${Math.round(t.durationSeconds/60)} phút`;
+  $('startPauseText').textContent = t.status === 'running' ? 'Tạm dừng' : t.status === 'paused' ? 'Tiếp tục' : t.status === 'completed' ? 'Phiên tiếp theo' : 'Bắt đầu';
+  $('startPauseIcon').innerHTML = t.status === 'running'
+    ? '<path d="M7 5h3v14H7zM14 5h3v14h-3z"/>'
+    : '<path d="M8 5.8c0-.8.9-1.3 1.6-.9l9 6.2a1.1 1.1 0 0 1 0 1.8l-9 6.2c-.7.5-1.6 0-1.6-.9z"/>';
+  $('startPauseBtn').setAttribute('aria-label', $('startPauseText').textContent);
+  $('ringProgress').style.stroke = meta.color;
+  updateRing(remaining, t.durationSeconds);
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === t.mode));
+  const interval = state.settings.longInterval;
+  $('cycleText').textContent = `Chu kỳ ${t.cyclePosition + 1}/${interval}`;
+  $('cycleDots').innerHTML = Array.from({length: interval}, (_,i) => `<i class="cycle-dot ${i < t.cyclePosition ? 'done' : ''}" aria-hidden="true"></i>`).join('');
+  const activeTask = state.tasks.find(task => task.id === state.activeTaskId && !task.completed);
+  $('activeTaskName').textContent = activeTask ? activeTask.name : 'Chưa chọn công việc';
+  $('activeTaskName').title = activeTask ? activeTask.name : '';
+  $('cycleGuidance') && ($('cycleGuidance').textContent = t.cyclePosition === interval - 1
+    ? 'Phiên tập trung kế tiếp sẽ khép lại chu kỳ. Sau đó, hãy dành thời gian cho một kỳ nghỉ dài.'
+    : `Hoàn thành ${interval - t.cyclePosition} phiên tập trung nữa để đến kỳ nghỉ dài. Hãy duy trì nhịp độ vừa sức.`);
+  applyLanguage();
+}
+function renderTaskSelect() {
+  const openTasks = state.tasks.filter(task => !task.completed);
+  const options = '<option value="">Không gắn công việc</option>' + openTasks.map(task => `<option value="${escapeHTML(task.id)}">${escapeHTML(task.name)}</option>`).join('');
+  ['activeTaskSelect','fullscreenTaskSelect'].forEach(id=>{
+    const select=$(id);
+    if (!select) return;
+    select.innerHTML=options;
+    select.value=openTasks.some(task=>task.id===state.activeTaskId)?state.activeTaskId:'';
+  });
+}
+function getTodayRecords() {
+  const key = localDateKey();
+  return state.history.filter(record => record.dateKey === key);
+}
+function renderTimerMetrics() {
+  const records = getTodayRecords();
+  $('todaySessions').textContent = String(records.length);
+  $('todayFocusTime').textContent = formatDuration(records.reduce((sum,r) => sum + r.durationSeconds, 0), true);
+  $('todayDateLabel').textContent = new Intl.DateTimeFormat(currentLocale(),{day:'2-digit',month:'short'}).format(new Date()).toUpperCase();
+}
+function renderAll() {
+  renderTimer(); renderTaskSelect(); renderTimerMetrics(); renderTasks(); renderStatistics(); renderSettingsControls(); updateStorageStatus(); applyLanguage(); updateDocumentTitle();
+}
+
+function navigate(view) {
+  if (!['timer','tasks','stats','settings'].includes(view)) return;
+  document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === `view-${view}`));
+  document.querySelectorAll('.nav-btn[data-view],.mobile-bottom [data-view]').forEach(btn => {
+    const active = btn.dataset.view === view;
+    btn.classList.toggle('active', active);
+    if (btn.classList.contains('nav-btn')) {
+      if (active) btn.setAttribute('aria-current','page'); else btn.removeAttribute('aria-current');
+    }
+  });
+  if (view === 'stats') renderStatistics();
+  if (view === 'tasks') renderTasks();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderTasks() {
+  const active = state.tasks.filter(t => !t.completed), completed = state.tasks.filter(t => t.completed);
+  $('taskOpenCount').textContent = String(active.length);
+  $('taskDoneCount').textContent = String(completed.length);
+  const list = $('taskList');
+  const sorted = [...active.sort((a,b) => b.createdAt-a.createdAt), ...completed.sort((a,b) => b.createdAt-a.createdAt)];
+  if (!sorted.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><h3>Chưa có công việc nào</h3><p>Tạo một công việc nhỏ, xác định mục tiêu và bắt đầu phiên tập trung đầu tiên.</p><button class="btn primary" id="emptyAddTask">Thêm công việc</button></div>`;
+    $('emptyAddTask').addEventListener('click', () => openTaskModal());
+    applyLanguage();
+    return;
+  }
+  list.innerHTML = sorted.map(task => {
+    const target = task.targetSessions;
+    const pct = target ? Math.min(100, Math.round(task.completedSessions / target * 100)) : 0;
+    const progressText = target ? `${task.completedSessions}/${target} phiên` : `${task.completedSessions} phiên`;
+    return `<article class="task-row ${task.completed?'completed':''}" data-task-id="${escapeHTML(task.id)}">
+      <input class="task-check" type="checkbox" aria-label="${task.completed?'Mở lại':'Hoàn thành'} công việc ${escapeHTML(task.name)}" ${task.completed?'checked':''} data-action="toggle-task">
+      <div class="task-main"><div class="task-name">${escapeHTML(task.name)}</div><div class="task-meta"><span>${progressText}</span>${target ? `<span class="task-progress" aria-label="Tiến độ ${pct}%"><span style="width:${pct}%"></span></span>` : ''}<span>${new Intl.DateTimeFormat(currentLocale(),{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(task.createdAt))}</span>${state.activeTaskId===task.id?'<span style="color:var(--accent)">Đang chọn</span>':''}</div></div>
+      <div class="task-actions">${!task.completed?`<button class="icon-btn" data-action="select-task" title="Chọn công việc" aria-label="Chọn công việc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m5 12 5 5L20 7"/></svg></button>`:''}<button class="icon-btn" data-action="edit-task" title="Chỉnh sửa" aria-label="Chỉnh sửa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m16 4 4 4M4 20l4-.8L19 8a2.1 2.1 0 0 0-3-3L5 16z"/></svg></button><button class="icon-btn" data-action="delete-task" title="Xóa" aria-label="Xóa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6m4 4v6m6-6v6"/></svg></button></div>
+    </article>`;
+  }).join('');
+  applyLanguage();
+}
+function openTaskModal(taskId = null) {
+  const task = taskId ? state.tasks.find(t => t.id === taskId) : null;
+  openModal(`<div class="modal-head"><div class="modal-title" id="modalTitle">${task?'Chỉnh sửa công việc':'Công việc mới'}</div><button class="modal-close" data-modal-close aria-label="Đóng">×</button></div>
+    <form id="taskForm"><div class="form-group"><label for="taskNameInput">Tên công việc</label><input class="field" id="taskNameInput" name="name" maxlength="160" required placeholder="Ví dụ: Hoàn thiện báo cáo lâm sàng" value="${task?escapeHTML(task.name):''}"></div>
+    <div class="form-group"><label for="taskTargetInput">Mục tiêu phiên tập trung (không bắt buộc)</label><input class="field" id="taskTargetInput" name="target" type="number" min="1" max="999" placeholder="Ví dụ: 4" value="${task&&task.targetSessions?task.targetSessions:''}"><div class="form-help">Bạn có thể để trống nếu chưa muốn đặt mục tiêu.</div></div>
+    <div class="modal-actions"><button type="button" class="btn ghost" data-modal-close>Hủy</button><button type="submit" class="btn primary">${task?'Lưu thay đổi':'Tạo công việc'}</button></div></form>`);
+  $('taskNameInput').focus();
+  $('taskForm').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = $('taskNameInput').value.trim();
+    const targetRaw = $('taskTargetInput').value.trim();
+    if (!name) { $('taskNameInput').focus(); return; }
+    const target = targetRaw ? safeInt(targetRaw, 1, 1, 999) : null;
+    if (task) { task.name = name.slice(0,160); task.targetSessions = target; }
+    else {
+      const created = { id: uid(), name: name.slice(0,160), createdAt: now(), completed:false, targetSessions:target, completedSessions:0, completedAt:null };
+      state.tasks.unshift(created);
+      if (!state.activeTaskId) state.activeTaskId = created.id;
+    }
+    persist(); closeModal(); renderAll(); toast(task?'Đã cập nhật công việc.':'Đã thêm công việc.');
+  });
+}
+function handleTaskAction(event) {
+  const btn = event.target.closest('[data-action]');
+  if (!btn) return;
+  const row = btn.closest('[data-task-id]');
+  const task = row && state.tasks.find(t => t.id === row.dataset.taskId);
+  if (!task) return;
+  const action = btn.dataset.action;
+  if (action === 'toggle-task') {
+    task.completed = btn.checked; task.completedAt = task.completed ? now() : null;
+    if (task.completed && state.activeTaskId === task.id) state.activeTaskId = null;
+    persist(); renderAll(); toast(task.completed?'Đã hoàn thành công việc.':'Đã mở lại công việc.');
+  } else if (action === 'select-task') {
+    if (!task.completed) { state.activeTaskId = task.id; persist(); renderAll(); toast('Đã chọn công việc.'); }
+  } else if (action === 'edit-task') openTaskModal(task.id);
+  else if (action === 'delete-task') {
+    if (!localizeConfirm(`Xóa công việc “${task.name}”? Lịch sử phiên tập trung đã ghi nhận sẽ được giữ nguyên.`)) return;
+    state.tasks = state.tasks.filter(t => t.id !== task.id);
+    if (state.activeTaskId === task.id) state.activeTaskId = null;
+    persist(); renderAll(); toast('Đã xóa công việc. Lịch sử cũ được giữ lại.');
+  }
+}
+
+function renderStatistics() {
+  const today = getTodayRecords();
+  const totalSeconds = state.history.reduce((sum,r) => sum+r.durationSeconds,0);
+  $('statTodaySessions').textContent = String(today.length);
+  $('statTodayTime').textContent = formatDuration(today.reduce((sum,r)=>sum+r.durationSeconds,0), true);
+  $('statTotalSessions').textContent = String(state.history.length);
+  $('statTotalTime').textContent = formatDuration(totalSeconds,true);
+  const days = Array.from({length:7},(_,i)=>{
+    const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate()-(6-i));
+    const key = localDateKey(d), records = state.history.filter(r=>r.dateKey===key);
+    return { date:d,key,count:records.length,seconds:records.reduce((s,r)=>s+r.durationSeconds,0) };
+  });
+  renderWeeklyChart(days);
+  const activeDays = days.filter(d=>d.count>0);
+  const weekSessions = days.reduce((s,d)=>s+d.count,0), weekSeconds = days.reduce((s,d)=>s+d.seconds,0);
+  $('weeklySummary').textContent = weekSessions ? `${weekSessions} phiên · ${formatDuration(weekSeconds)} trong 7 ngày gần nhất · Trung bình ${formatDuration(weekSeconds/7)} mỗi ngày.` : 'Chưa có dữ liệu trong khoảng thời gian này. Hoàn thành một phiên tập trung để bắt đầu theo dõi.';
+  const byDay = new Map();
+  state.history.forEach(r=>byDay.set(r.dateKey,(byDay.get(r.dateKey)||0)+r.durationSeconds));
+  const dayEntries = [...byDay.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+  const best = dayEntries.reduce((best,item)=>!best||item[1]>best[1]?item:best,null);
+  const longest = dayEntries.reduce((best,item)=>!best||item[1]>best[1]?item:best,null);
+  const streak = calculateStreak(byDay);
+  const avg = state.history.length ? totalSeconds/state.history.length : 0;
+  const completedTasks = state.tasks.filter(t=>t.completed).length;
+  const insights = [
+    ['Ngày tập trung tốt nhất',best?`${new Intl.DateTimeFormat(currentLocale(),{day:'2-digit',month:'short',year:'numeric'}).format(new Date(best[0]+'T12:00:00'))} · ${formatDuration(best[1])}`:'Chưa có dữ liệu'],
+    ['Kỷ lục thời gian/ngày',longest?formatDuration(longest[1]):'Chưa có dữ liệu'],
+    ['Thời lượng trung bình/phiên',state.history.length?formatDuration(avg):'Chưa có dữ liệu'],
+    ['Chuỗi ngày có tập trung',state.history.length?`${streak} ngày`:'Chưa có dữ liệu'],
+    ['Công việc hoàn thành',String(completedTasks)]
+  ];
+  $('insightList').innerHTML = insights.map(([label,value])=>`<div class="insight"><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('');
+  $('statsRangeLabel').textContent = `${state.history.length} PHIÊN ĐÃ GHI NHẬN`;
+  applyLanguage();
+}
+function calculateStreak(byDay) {
+  if (!byDay.size) return 0;
+  let cursor = new Date(); cursor.setHours(0,0,0,0);
+  if (!byDay.has(localDateKey(cursor))) cursor.setDate(cursor.getDate()-1);
+  let count = 0;
+  while (byDay.has(localDateKey(cursor)) && count < 36500) { count++; cursor.setDate(cursor.getDate()-1); }
+  return count;
+}
+function renderWeeklyChart(days) {
+  const container = $('weeklyChart');
+  const max = Math.max(1,...days.map(d=>d.count));
+  const width=620,height=220,left=32,right=12,top=16,bottom=36,chartH=height-top-bottom,chartW=width-left-right;
+  const barW=38,gap=(chartW-7*barW)/6;
+  const grid = [0,.5,1].map(fr=>{
+    const y=top+chartH*(1-fr);
+    return `<line class="chart-grid-line" x1="${left}" y1="${y}" x2="${width-right}" y2="${y}"/><text class="chart-label" x="${left-10}" y="${y+3}" text-anchor="end">${Math.round(max*fr)}</text>`;
+  }).join('');
+  const bars=days.map((d,i)=>{
+    const h=d.count?Math.max(3,chartH*d.count/max):2;
+    const x=left+i*(barW+gap),y=top+chartH-h;
+    const label=new Intl.DateTimeFormat(currentLocale(),{weekday:'short'}).format(d.date).replace('.','');
+    return `<rect class="chart-bar ${i===6?'today':''} ${d.count?'':'chart-empty'}" x="${x}" y="${y}" width="${barW}" height="${h}" rx="7"><title>${label}: ${d.count} ${uiPrefs.lang==='en'?'sessions':'phiên'} · ${formatDuration(d.seconds)}</title></rect>${d.count?`<text class="chart-value" x="${x+barW/2}" y="${Math.max(10,y-8)}" text-anchor="middle">${d.count}</text>`:''}<text class="chart-label" x="${x+barW/2}" y="${height-11}" text-anchor="middle">${label}</text>`;
+  }).join('');
+  container.innerHTML = `<svg class="weekly-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Biểu đồ số phiên tập trung trong 7 ngày">${grid}${bars}</svg>`;
+}
+
+function renderSettingsControls() {
+  $('focusMinutes').value = state.settings.durations.focus;
+  $('shortMinutes').value = state.settings.durations.short;
+  $('longMinutes').value = state.settings.durations.long;
+  $('longInterval').value = state.settings.longInterval;
+  ['autoTransition','autoStartFocus','autoStartShort','autoStartLong','soundEnabled','startSound','inAppNotifications','wakeLockEnabled'].forEach(key=>$(key).checked=!!state.settings[key]);
+  $('soundType').value = state.settings.soundType;
+  $('soundVolume').value = state.settings.soundVolume;
+  $('volumeValue').textContent = `${state.settings.soundVolume}%`;
+  const supported = 'Notification' in window;
+  const permission = supported ? Notification.permission : 'unsupported';
+  $('notificationPermissionBtn').disabled = !supported || permission === 'granted';
+  $('notificationPermissionBtn').textContent = permission === 'granted' ? 'Đã cấp quyền' : permission === 'denied' ? 'Đã bị chặn' : supported ? 'Cấp quyền' : 'Không hỗ trợ';
+  $('notificationHelp').textContent = !supported ? 'Trình duyệt này không hỗ trợ Notification API.' : permission === 'denied' ? 'Quyền thông báo đang bị chặn trong cài đặt trình duyệt.' : permission === 'granted' ? 'Đã cấp quyền thông báo cho trang này.' : 'Chỉ yêu cầu quyền sau khi bạn nhấn nút Cấp quyền.';
+  applyLanguage();
+}
+function saveTimerSettings() {
+  const focus = Number($('focusMinutes').value), short = Number($('shortMinutes').value), long = Number($('longMinutes').value), interval = Number($('longInterval').value);
+  if (!Number.isInteger(focus)||focus<1||focus>180||!Number.isInteger(short)||short<1||short>60||!Number.isInteger(long)||long<1||long>90||!Number.isInteger(interval)||interval<2||interval>8) {
+    toast('Giá trị không hợp lệ. Kiểm tra giới hạn thời lượng và chu kỳ.', 'error'); return;
+  }
+  state.settings.durations = {focus,short,long};
+  state.settings.longInterval = interval;
+  state.timer.cyclePosition = Math.min(state.timer.cyclePosition, interval-1);
+  if (state.timer.status !== 'running' && state.timer.status !== 'paused' && state.timer.status !== 'completed') {
+    state.timer.durationSeconds = state.settings.durations[state.timer.mode]*60;
+    state.timer.remainingSeconds = state.timer.durationSeconds;
+  }
+  persist(); renderAll(); toast('Đã lưu cài đặt bộ đếm.');
+}
+function resetTimerSettings() {
+  if (!localizeConfirm('Khôi phục thời lượng và chu kỳ về mặc định?')) return;
+  state.settings.durations = clone(DEFAULT_SETTINGS.durations); state.settings.longInterval = DEFAULT_SETTINGS.longInterval;
+  if (state.timer.status === 'idle') { state.timer.durationSeconds=state.settings.durations[state.timer.mode]*60; state.timer.remainingSeconds=state.timer.durationSeconds; }
+  persist(); renderAll(); toast('Đã khôi phục cài đặt mặc định.');
+}
+function saveSetting(key,value) {
+  state.settings[key] = value;
+  persist();
+  if (key === 'wakeLockEnabled') { if (value) requestWakeLock(); else releaseWakeLock(); }
+  if (key === 'soundEnabled') {
+    updateSoundIcon();
+    if (value) ensureAudioContext();
+  }
+}
+
+function ensureAudioContext() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return null;
+  try { if (!audioContext) audioContext = new Ctx(); if (audioContext.state === 'suspended') audioContext.resume().catch(()=>{}); return audioContext; }
+  catch (_) { return null; }
+}
+function tone(ctx, frequency, start, duration, type, volume, endFrequency = null) {
+  const osc=ctx.createOscillator(), gain=ctx.createGain();
+  osc.type=type; osc.frequency.setValueAtTime(frequency,start);
+  if (endFrequency) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFrequency),start+duration);
+  gain.gain.setValueAtTime(0.0001,start); gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),start+.018); gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+  osc.connect(gain); gain.connect(ctx.destination); osc.start(start); osc.stop(start+duration+.03);
+}
+function playSound(kind='complete') {
+  if (!state.settings.soundEnabled && kind!=='preview') return;
+  const ctx=ensureAudioContext(); if (!ctx) { if(kind==='preview') toast('Trình duyệt không hỗ trợ Web Audio API.','error'); return; }
+  const base=ctx.currentTime+.025, vol=(state.settings.soundVolume/100)*.16;
+  const preset=state.settings.soundType;
+  if (kind==='start') { tone(ctx,660,base,.11,'sine',vol*.65); return; }
+  if (preset==='beep') { tone(ctx,880,base,.16,'square',vol*.45); tone(ctx,660,base+.2,.2,'square',vol*.4); }
+  else if (preset==='bell') { tone(ctx,784,base,.48,'sine',vol); tone(ctx,1175,base+.035,.55,'sine',vol*.42); tone(ctx,1568,base+.07,.42,'sine',vol*.2); }
+  else if (preset==='alarm') { for(let i=0;i<3;i++){tone(ctx,740,base+i*.32,.18,'triangle',vol*.75);tone(ctx,520,base+i*.32+.18,.18,'triangle',vol*.65);} }
+  else { tone(ctx,523,base,.42,'sine',vol*.8); tone(ctx,659,base+.13,.48,'sine',vol*.7); tone(ctx,784,base+.26,.65,'sine',vol*.55); }
+}
+function updateSoundIcon() {
+  const icon=$('soundQuickIcon');
+  icon.innerHTML = state.settings.soundEnabled
+    ? '<path d="M11 5 6 9H3v6h3l5 4zM15 9a5 5 0 0 1 0 6M18 6a9 9 0 0 1 0 12"/>'
+    : '<path d="M11 5 6 9H3v6h3l5 4zM16 9l5 6m0-6-5 6"/>';
+  $('soundQuick').style.color = state.settings.soundEnabled ? 'var(--accent)' : 'var(--muted)';
+}
+function sendBrowserNotification(completedMode) {
+  if (!state.settings.browserNotifications || !('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    const next = state.timer.pendingMode;
+    const title = translateText(`${MODE_META[completedMode].label} đã hoàn tất`);
+    const body = next ? translateText(`Đã đến lúc ${MODE_META[next].label.toLowerCase()}.`) : translateText('Bạn đã hoàn thành một phiên Pomodoro.');
+    const notification = new Notification(title,{body,tag:'pomodoro-session',renotify:false});
+    notification.onclick = () => { window.focus(); notification.close(); };
+  } catch (_) { /* Browser notifications are best-effort. */ }
+}
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) { toast('Trình duyệt không hỗ trợ thông báo hệ thống.','error'); return; }
+  try {
+    const result = await Notification.requestPermission();
+    state.settings.browserNotifications = result === 'granted';
+    persist(); renderSettingsControls();
+    toast(result === 'granted' ? 'Đã cấp quyền thông báo.' : 'Chưa cấp quyền thông báo.');
+  } catch (_) { toast('Không thể yêu cầu quyền thông báo.','error'); }
+}
+async function requestWakeLock() {
+  if (!state.settings.wakeLockEnabled || !('wakeLock' in navigator) || document.visibilityState !== 'visible') return;
+  try { if (!wakeLock || wakeLock.released) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null;}); } }
+  catch (_) { toast('Không thể bật giữ màn hình sáng trên thiết bị này.','error'); }
+}
+async function releaseWakeLock() {
+  if (wakeLock) { try { await wakeLock.release(); } catch (_) {} wakeLock=null; }
+}
+
+function openModal(markup, wide=false) {
+  modalPreviousFocus = document.activeElement;
+  $('modalContent').classList.toggle('wide',!!wide);
+  $('modalContent').innerHTML = markup;
+  applyLanguage($('modalContent'));
+  $('modalBackdrop').classList.add('open');
+  $('modalBackdrop').setAttribute('aria-hidden','false');
+  $('modalContent').querySelector('[data-modal-close]')?.addEventListener('click',closeModal);
+  $('modalBackdrop').querySelectorAll('[data-modal-close]').forEach(el=>el.addEventListener('click',closeModal));
+  setTimeout(()=> $('modalContent').querySelector('input,button')?.focus(),0);
+}
+function closeModal() {
+  if (!$('modalBackdrop').classList.contains('open')) return;
+  $('modalBackdrop').classList.remove('open');
+  $('modalBackdrop').setAttribute('aria-hidden','true');
+  if (modalPreviousFocus && typeof modalPreviousFocus.focus==='function') modalPreviousFocus.focus();
+}
+function showCompletionModal(mode, next, transitioned, autoStarted) {
+  const focusCompleted = mode === 'focus';
+  const recordsToday = getTodayRecords().length;
+  const buttonText = autoStarted ? 'Đóng' : transitioned ? `Bắt đầu · ${MODE_META[next].label}` : `Tiếp tục · ${MODE_META[next].label}`;
+  const dismissText = autoStarted ? '' : '<div style="margin-top:9px"><button class="link-btn" id="completionDismiss">Để sau</button></div>';
+  const content = `<div class="completion-body"><div class="completion-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg></div><h2>${focusCompleted?'Bạn đã hoàn thành một phiên tập trung':'Thời gian nghỉ đã kết thúc'}</h2><p>${focusCompleted?'Làm tốt lắm. Một bước tiến nhỏ đã được ghi nhận.':'Hy vọng bạn đã được nạp lại năng lượng. Sẵn sàng quay lại công việc?'}</p><div class="completion-detail"><span><strong>${focusCompleted?recordsToday:state.timer.cyclePosition}</strong> ${focusCompleted?'phiên hôm nay':'phiên trong chu kỳ'}</span><span><strong>${MODE_META[next].label}</strong> tiếp theo</span></div><button class="btn primary" id="completionContinue">${buttonText}</button>${dismissText}</div>`;
+  openModal(content);
+  $('completionContinue').addEventListener('click',()=>{
+    if (autoStarted) closeModal();
+    else if (transitioned) { closeModal(); startTimer({silent:false}); }
+    else advanceAfterCompletion(false);
+  });
+  $('completionDismiss')?.addEventListener('click',closeModal);
+}
+function toast(message,type='success') {
+  const el=document.createElement('div'); el.className=`toast ${type==='error'?'error':''}`; el.textContent=message;
+  $('toastRegion').appendChild(el); const id=++toastCounter;
+  window.setTimeout(()=>{el.remove();},3400);
+  return id;
+}
+
+function updateDocumentTitle(remainingOverride=null) {
+  const t=state.timer, remaining=remainingOverride===null?(t.status==='running'?currentRemaining():t.remainingSeconds):remainingOverride;
+  document.title = t.status==='completed' ? translateText('Hoàn tất | Pomodoro') : `${formatClock(remaining)} | ${translateText(MODE_META[t.mode].label)} | Pomodoro`;
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    navigate('timer');
+    if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>toast('Không thể bật toàn màn hình trên trình duyệt này.','error'));
+    else toast('Trình duyệt không hỗ trợ toàn màn hình.','error');
+  } else if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+function exportData() {
+  const payload = { app:'Pomodoro Standalone', schemaVersion:SCHEMA_VERSION, exportedAt:new Date().toISOString(), settings:state.settings, tasks:state.tasks, history:state.history, activeTaskId:state.activeTaskId, timer:state.timer };
+  const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob); const a=document.createElement('a');
+  a.href=url; a.download=`pomodoro-backup-${localDateKey()}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  toast('Đã xuất bản sao lưu JSON.');
+}
+function validateImport(parsed) {
+  if (!parsed || typeof parsed!=='object' || Array.isArray(parsed)) throw new Error('Tệp JSON không đúng định dạng.');
+  if (!parsed.schemaVersion || ![1].includes(Number(parsed.schemaVersion))) throw new Error('Phiên bản dữ liệu không tương thích.');
+  if (parsed.tasks !== undefined && !Array.isArray(parsed.tasks)) throw new Error('Danh sách công việc không hợp lệ.');
+  if (parsed.history !== undefined && !Array.isArray(parsed.history)) throw new Error('Lịch sử phiên không hợp lệ.');
+  const normalized=normalizeState(parsed);
+  if (parsed.tasks && normalized.tasks.length !== parsed.tasks.filter(t=>t&&String(t.name||'').trim()).length) throw new Error('Một số công việc trong tệp không hợp lệ.');
+  return normalized;
+}
+function importDataFile(file) {
+  if (!file) return;
+  const reader=new FileReader();
+  reader.onerror=()=>toast('Không thể đọc tệp sao lưu.','error');
+  reader.onload=()=>{
+    try {
+      const parsed=JSON.parse(String(reader.result));
+      const imported=validateImport(parsed);
+      if (!localizeConfirm(`Nhập ${imported.tasks.length} công việc và ${imported.history.length} phiên lịch sử? Dữ liệu hiện tại sẽ được thay thế.`)) return;
+      stopTimerLoop(); runtimeAnchor=null; state=imported;
+      if (state.timer.status==='running') {
+        const remain=currentRemaining(true);
+        if (remain<=0) { state.timer.remainingSeconds=0; }
+      }
+      persist(); renderAll(); reconcileTimerOnLoad(); navigate('timer'); toast('Đã nhập dữ liệu thành công.');
+    } catch(error) { toast(error.message || 'Tệp sao lưu không hợp lệ.','error'); }
+  };
+  reader.readAsText(file);
+}
+function clearAllData() {
+  if (!localizeConfirm('Xóa toàn bộ công việc, lịch sử và cài đặt? Hành động này không thể hoàn tác. Hãy xuất bản sao lưu trước nếu cần.')) return;
+  stopTimerLoop(); releaseWakeLock(); runtimeAnchor=null; state=createInitialState(); uiPrefs={theme:'light',lang:'vi'}; saveUIPreferences(); applyTheme();
+  try { localStorage.removeItem(STORAGE_KEY); storageAvailable=true; } catch (_) { storageAvailable=false; }
+  persist(); renderAll(); navigate('timer'); toast('Đã xóa dữ liệu và khôi phục mặc định.');
+}
+function showShortcutsModal() {
+  openModal(`<div class="modal-head"><div class="modal-title" id="modalTitle">Phím tắt</div><button class="modal-close" data-modal-close aria-label="Đóng">×</button></div><table class="shortcut-table"><tr><td>Bắt đầu / Tạm dừng / Tiếp tục</td><td><kbd>Space</kbd></td></tr><tr><td>Đặt lại bộ đếm</td><td><kbd>R</kbd></td></tr><tr><td>Bỏ qua phiên hiện tại</td><td><kbd>N</kbd></td></tr><tr><td>Bật / Tắt toàn màn hình</td><td><kbd>F</kbd></td></tr><tr><td>Mở Cài đặt</td><td><kbd>S</kbd></td></tr><tr><td>Đóng cửa sổ / Thoát toàn màn hình</td><td><kbd>Esc</kbd></td></tr></table><div class="modal-actions"><button class="btn primary" data-modal-close>Đã hiểu</button></div>`);
+}
+function keyboardHandler(event) {
+  const target=event.target;
+  const isTyping = target && (target.isContentEditable || ['INPUT','TEXTAREA','SELECT'].includes(target.tagName));
+  if (event.key==='Escape') { if ($('modalBackdrop').classList.contains('open')) closeModal(); else if (document.fullscreenElement) toggleFullscreen(); return; }
+  if ($('modalBackdrop').classList.contains('open') || isTyping || event.altKey || event.ctrlKey || event.metaKey) return;
+  if (event.code==='Space') { event.preventDefault(); handleStartPause(); }
+  else if (event.key.toLowerCase()==='r') { event.preventDefault(); resetTimer(); }
+  else if (event.key.toLowerCase()==='n') { event.preventDefault(); skipTimer(); }
+  else if (event.key.toLowerCase()==='f') { event.preventDefault(); toggleFullscreen(); }
+  else if (event.key.toLowerCase()==='s') { event.preventDefault(); navigate('settings'); }
+}
+function handleStartPause() {
+  if (state.timer.status==='running') pauseTimer();
+  else if (state.timer.status==='completed') advanceAfterCompletion(false);
+  else startTimer({isResume:state.timer.status==='paused'});
+}
+
+function bindEvents() {
+  document.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>navigate(btn.dataset.view)));
+  document.querySelectorAll('.mode-btn').forEach(btn=>btn.addEventListener('click',()=>manualModeChange(btn.dataset.mode)));
+  $('startPauseBtn').addEventListener('click',handleStartPause);
+  $('resetBtn').addEventListener('click',resetTimer);
+  $('skipBtn').addEventListener('click',skipTimer);
+  $('manageTaskLink').addEventListener('click',()=>navigate('tasks'));
+  $('quickAddTask').addEventListener('click',()=>openTaskModal());
+  $('addTaskBtn').addEventListener('click',()=>openTaskModal());
+  $('taskList').addEventListener('click',event=>{
+    if (event.target.closest('[data-action="toggle-task"]')) return;
+    handleTaskAction(event);
+  });
+  $('taskList').addEventListener('change',event=>{
+    if (event.target.closest('[data-action="toggle-task"]')) handleTaskAction(event);
+  });
+  ['activeTaskSelect','fullscreenTaskSelect'].forEach(id=>$(id).addEventListener('change',event=>{state.activeTaskId=event.target.value||null;persist();renderTaskSelect();renderTimer();renderTasks();}));
+  document.querySelectorAll('.settings-tab').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.settings-tab').forEach(x=>x.classList.toggle('active',x===btn));
+    document.querySelectorAll('.settings-panel').forEach(x=>x.classList.toggle('active',x.dataset.settingsPanel===btn.dataset.settingsTab));
+  }));
+  $('saveTimerSettings').addEventListener('click',saveTimerSettings);
+  $('resetTimerSettings').addEventListener('click',resetTimerSettings);
+  ['autoTransition','autoStartFocus','autoStartShort','autoStartLong','soundEnabled','startSound','inAppNotifications','wakeLockEnabled'].forEach(key=>$(key).addEventListener('change',()=>saveSetting(key,$(key).checked)));
+  $('soundType').addEventListener('change',()=>saveSetting('soundType',$('soundType').value));
+  $('soundVolume').addEventListener('input',()=>{$('volumeValue').textContent=$('soundVolume').value+'%';});
+  $('soundVolume').addEventListener('change',()=>saveSetting('soundVolume',safeInt($('soundVolume').value,55,0,100)));
+  $('previewSound').addEventListener('click',()=>{state.settings.soundType=$('soundType').value;state.settings.soundVolume=safeInt($('soundVolume').value,55,0,100);playSound('preview');});
+  $('soundQuick').addEventListener('click',()=>{saveSetting('soundEnabled',!state.settings.soundEnabled);renderSettingsControls();toast(state.settings.soundEnabled?'Đã bật âm thanh.':'Đã tắt âm thanh.');});
+  $('fullscreenBtn').addEventListener('click',toggleFullscreen);
+  const toggleTheme=()=>{uiPrefs.theme=uiPrefs.theme==='light'?'dark':'light';saveUIPreferences();applyTheme();};
+  $('themeToggle').addEventListener('click',toggleTheme);
+  $('fullscreenThemeToggle').addEventListener('click',toggleTheme);
+  $('languageToggle').addEventListener('click',()=>{uiPrefs.lang=uiPrefs.lang==='vi'?'en':'vi';saveUIPreferences();renderAll();applyLanguage();});
+  $('notificationPermissionBtn').addEventListener('click',requestNotificationPermission);
+  $('showShortcuts').addEventListener('click',showShortcutsModal);
+  $('exportDataBtn').addEventListener('click',exportData);
+  $('importDataBtn').addEventListener('click',()=>$('importFile').click());
+  $('importFile').addEventListener('change',event=>{importDataFile(event.target.files[0]);event.target.value='';});
+  $('clearDataBtn').addEventListener('click',clearAllData);
+  $('modalBackdrop').addEventListener('click',event=>{if(event.target===$('modalBackdrop'))closeModal();});
+  document.addEventListener('keydown',keyboardHandler);
+  document.addEventListener('visibilitychange',()=>{
+    if (document.visibilityState==='visible') {
+      if (state.timer.status==='running') {
+        const remaining=currentRemaining(true);
+        if (remaining<=0) completeTimer(state.timer.runId);
+        else { state.timer.remainingSeconds=remaining; resetRuntimeAnchor(remaining); persist(); tickTimer(); }
+      }
+      if (state.settings.wakeLockEnabled) requestWakeLock();
+    } else if (wakeLock) { releaseWakeLock(); }
+  });
+  window.addEventListener('pagehide',()=>{ if(state.timer.status==='running') {state.timer.remainingSeconds=currentRemaining(true);persist();} });
+  document.addEventListener('fullscreenchange',()=>{
+    const active=!!document.fullscreenElement;
+    document.documentElement.classList.toggle('app-fullscreen',active);
+    if(active && !$('view-timer').classList.contains('active')) navigate('timer');
+    $('fullscreenBtn').setAttribute('aria-label',translateText(active?'Thoát toàn màn hình':'Toàn màn hình')); $('fullscreenBtn').setAttribute('title',translateText(active?'Thoát toàn màn hình':'Toàn màn hình'));
+  });
+}
+
+function init() {
+  loadUIPreferences();
+  loadState();
+  // Migrate legacy/missing fields and reconcile an in-flight timer before rendering.
+  state.settings=normalizeSettings(state.settings);
+  if (!state.timer || !MODE_META[state.timer.mode]) state.timer=createInitialState().timer;
+  if (state.timer.status==='running' && state.timer.endAt) {
+    const remaining=(state.timer.endAt-now())/1000;
+    if (remaining<=0) state.timer.remainingSeconds=0;
+    else state.timer.remainingSeconds=remaining;
+  }
+  bindEvents(); renderAll(); applyTheme(); applyLanguage(); updateSoundIcon(); updateDocumentTitle();
+  reconcileTimerOnLoad();
+  if (state.settings.wakeLockEnabled) requestWakeLock();
+}
+
+init();
+})();
+</script>
+</body>
+</html>
